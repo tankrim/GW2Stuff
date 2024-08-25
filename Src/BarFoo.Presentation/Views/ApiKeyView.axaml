@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:BarFoo.Presentation.ViewModels"
+             xmlns:views="clr-namespace:BarFoo.Presentation.Views;assembly=BarFoo"
+             x:Class="BarFoo.Presentation.Views.ApiKeyView"
+             x:DataType="vm:ApiKeyViewModel"
+             xmlns:s="using:Avalonia.Styling">
+  
+  <StackPanel Margin="10" IsVisible="{Binding IsPaneOpen}">
+    <TextBlock Text="Api Key Management"
+               Margin="0,0,0,10"
+               Classes="h2"/>
+
+    <TextBox Text="{Binding Token}"
+             Watermark="Insert the Api Key here"
+             Margin="0 0 0 5"/>
+    
+    <TextBox Text="{Binding Name}"
+             Watermark="Give the Api Key a name"
+             Margin="0 5 0 5"/>
+
+    <Button Command="{Binding AddApiKeyCommand}"
+            Content="Add Api Key"
+            Margin="0 10 0 10"
+            Classes="AddButton AddButton:pointerover"/>
+
+    <ListBox ItemsSource="{Binding ApiKeys}"
+             SelectedItem="{Binding SelectedApiKey}"
+             Margin="0 20 0 20"
+             Classes="ApiKeys">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding Name}"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+    
+    <Button Command="{Binding RemoveSelectedApiKeyCommand}"
+            Content="Delete Selected Api Key"
+            Classes="DeleteButton DeleteButton:pointerover"/>
+  </StackPanel>
+
+</UserControl>

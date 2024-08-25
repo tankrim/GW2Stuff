@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:converters="using:BarFoo.Presentation.Converters"
+             xmlns:vm="using:BarFoo.Presentation.ViewModels"
+             xmlns:views="clr-namespace:BarFoo.Presentation.Views;assembly=BarFoo"
+             x:Class="BarFoo.Presentation.Views.StatusBarView"
+             x:DataType="vm:StatusBarViewModel">
+
+  <UserControl.Resources>
+    <converters:UpdatingConverter x:Key="UpdatingConverter"/>
+  </UserControl.Resources>
+
+  <Border Background="{DynamicResource SystemChromeLowColor}"
+          CornerRadius="0,0,4,4">
+
+    <Grid ColumnDefinitions="Auto,*,Auto">
+
+      <!-- Top Bevel -->
+      <Border Grid.ColumnSpan="3"
+              Height="2"
+              VerticalAlignment="Top"
+              Background="{DynamicResource SystemChromeHighColor}"/>
+
+      <!-- Left Bevel -->
+      <Border Grid.RowSpan="3"
+              Width="2"
+              HorizontalAlignment="Left"
+              CornerRadius="0,0,0,4"
+              Background="{DynamicResource SystemChromeHighColor}">
+      </Border>
+
+      <!-- Bottom Shadow -->
+      <Border Grid.ColumnSpan="3"
+              Height="2"
+              VerticalAlignment="Bottom"
+              CornerRadius="0,0,4,4"
+              Background="{DynamicResource SystemBaseLowColor}">
+      </Border>
+
+      <!-- Right Shadow -->
+      <Border Grid.Column="2"
+              Width="2"
+              HorizontalAlignment="Right"
+              CornerRadius="0,0,4,0"
+              Background="{DynamicResource SystemBaseLowColor}">
+      </Border>
+
+      <!-- Status Bar Content -->
+      <TextBlock Grid.Column="0"
+                 Margin="10,2,0,2"
+                 VerticalAlignment="Center"
+                 Foreground="{DynamicResource SystemBaseMediumHighColor}"
+                 Text="{Binding IsUpdating, Converter={StaticResource UpdatingConverter}}"/>
+
+      <TextBlock Grid.Column="2"
+                 Margin="0,2,10,2"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Right"
+                 Foreground="{DynamicResource SystemBaseMediumHighColor}">
+        <TextBlock.Text>
+          <MultiBinding StringFormat="{}Visible: {0} Loaded: {1}">
+            <Binding Path="FilteredObjectives.Count" FallbackValue="0" />
+            <Binding Path="LoadedObjectives.Count" FallbackValue="0"/>
+          </MultiBinding>
+        </TextBlock.Text>
+      </TextBlock>
+
+    </Grid>
+  </Border>
+
+</UserControl>

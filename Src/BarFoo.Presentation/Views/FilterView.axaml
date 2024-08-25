@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:BarFoo.Presentation.ViewModels"
+             x:Class="BarFoo.Presentation.Views.FilterView"
+             x:DataType="vm:FilterViewModel">
+
+  <Grid Grid.ColumnDefinitions="*,Auto">
+    <StackPanel Grid.Column="0"
+                Orientation="Horizontal"
+                Spacing="10"
+                Margin="10,20,10,10">
+      <CheckBox Content="Daily" IsChecked="{Binding FilterDaily}"/>
+      <CheckBox Content="Weekly" IsChecked="{Binding FilterWeekly}"/>
+      <CheckBox Content="Special" IsChecked="{Binding FilterSpecial}"/>
+      <CheckBox Content="Completed" IsChecked="{Binding FilterCompleted}"/>
+      <CheckBox Content="PvE" IsChecked="{Binding FilterPvE}"/>
+      <CheckBox Content="PvP" IsChecked="{Binding FilterPvP}"/>
+      <CheckBox Content="WvW" IsChecked="{Binding FilterWvW}"/>
+    </StackPanel>
+
+    <ItemsControl Grid.Column="1"
+                  ItemsSource="{Binding ApiKeyFilters}"
+                  Margin="10,20,10,10">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <CheckBox Content="{Binding ApiKeyName}" IsChecked="{Binding IsSelected}" Margin="0,0,10,0"/>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Grid>
+
+</UserControl>

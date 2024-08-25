@@ -1,0 +1,63 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="BarFoo.Presentation.App"
+             xmlns:local="using:BarFoo.Presentation"
+             xmlns:s="using:Avalonia.Styling"
+             RequestedThemeVariant="Light">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+  <Application.Styles>
+    <FluentTheme/>
+
+    <StyleInclude Source="avares://BarFoo.Presentation/Styles/Icons.axaml"/>
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+
+    <!-- Buttons -->
+    <!-- AddButtons -->
+    <Style Selector="Button.AddButton">
+      <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
+      <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+
+      <Style Selector="^:pointerover /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
+        <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+      </Style>
+    </Style>
+
+    <!-- DeleteButtons -->
+    <Style Selector="Button.DeleteButton">
+      <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
+      <Setter Property="Background" Value="{DynamicResource DeleteButtonBgBrush}"/>
+
+      <Style Selector="^:pointerover /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
+        <Setter Property="Background" Value="{DynamicResource DeleteButtonBgBrush}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+      </Style>
+    </Style>
+
+    <!-- Key ListBox  -->
+    <Style Selector="ListBox.ApiKeys">
+      <Setter Property="Height" Value="200"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+    
+    <!-- Headings -->
+    <Style Selector="Label.h1">
+      <Setter Property="FontSize" Value="36"/>
+      <Setter Property="FontWeight" Value="DemiBold"/>
+    </Style>
+
+    <Style Selector="TextBlock.h2">
+      <Setter Property="FontSize" Value="18"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+    
+  </Application.Styles>
+
+  <Application.Resources>    
+    <SolidColorBrush x:Key="DeleteButtonBgBrush" Color="#CC3337"/>
+  </Application.Resources>
+</Application>

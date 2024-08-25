@@ -1,0 +1,74 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33103.201
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{50AAD861-2EF1-4EAB-80EB-20FECB15232C}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
+		exclusions.dic = exclusions.dic
+		NuGet.config = NuGet.config
+		Settings.XamlStyler = Settings.XamlStyler
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{EF62C430-6899-4C85-BFFC-D71632937A3B}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{AC2A502B-963E-4FD6-ACCA-8F96EDD4190F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build_app.yml = .github\workflows\build_app.yml
+		.github\workflows\code_coverage_comment.yml = .github\workflows\code_coverage_comment.yml
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BarFoo.Presentation", "Src\BarFoo.Presentation\BarFoo.Presentation.csproj", "{8FBCD2F2-30D3-429F-B111-628B5A79C950}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarFoo.Core", "Src\BarFoo.Core\BarFoo.Core.csproj", "{A6A8BD92-611A-4B2E-BB0D-5D9D2B3FC5B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarFoo.Data", "Src\BarFoo.Data\BarFoo.Data.csproj", "{F72EA961-598D-4FCA-AE20-8AC393F773C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarFoo.Domain", "Src\BarFoo.Domain\BarFoo.Domain.csproj", "{7ED333A0-DF85-4AAD-AA58-7CABA3FF1E1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarFoo.Infrastructure", "Src\BarFoo.Infrastructure\BarFoo.Infrastructure.csproj", "{E46D63B1-2E48-4B14-80E9-3C7FDF7049D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FBCD2F2-30D3-429F-B111-628B5A79C950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FBCD2F2-30D3-429F-B111-628B5A79C950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FBCD2F2-30D3-429F-B111-628B5A79C950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FBCD2F2-30D3-429F-B111-628B5A79C950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6A8BD92-611A-4B2E-BB0D-5D9D2B3FC5B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6A8BD92-611A-4B2E-BB0D-5D9D2B3FC5B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6A8BD92-611A-4B2E-BB0D-5D9D2B3FC5B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6A8BD92-611A-4B2E-BB0D-5D9D2B3FC5B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F72EA961-598D-4FCA-AE20-8AC393F773C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F72EA961-598D-4FCA-AE20-8AC393F773C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F72EA961-598D-4FCA-AE20-8AC393F773C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F72EA961-598D-4FCA-AE20-8AC393F773C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ED333A0-DF85-4AAD-AA58-7CABA3FF1E1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ED333A0-DF85-4AAD-AA58-7CABA3FF1E1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ED333A0-DF85-4AAD-AA58-7CABA3FF1E1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ED333A0-DF85-4AAD-AA58-7CABA3FF1E1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E46D63B1-2E48-4B14-80E9-3C7FDF7049D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E46D63B1-2E48-4B14-80E9-3C7FDF7049D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E46D63B1-2E48-4B14-80E9-3C7FDF7049D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E46D63B1-2E48-4B14-80E9-3C7FDF7049D2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EF62C430-6899-4C85-BFFC-D71632937A3B} = {50AAD861-2EF1-4EAB-80EB-20FECB15232C}
+		{AC2A502B-963E-4FD6-ACCA-8F96EDD4190F} = {EF62C430-6899-4C85-BFFC-D71632937A3B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {490F259C-CD1B-446C-A893-CD94D4954AE9}
+	EndGlobalSection
+EndGlobal

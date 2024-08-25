@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:converters="using:BarFoo.Presentation.Converters"
+             xmlns:vm="using:BarFoo.Presentation.ViewModels"
+             x:Class="BarFoo.Presentation.Views.ObjectivesView"
+             x:DataType="vm:ObjectivesViewModel">
+
+  <UserControl.Resources>
+    <converters:ProgressConverter x:Key="ProgressConverter"/>
+    <converters:ProgressPercentageConverter x:Key="ProgressPercentageConverter"/>
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="*">
+
+    <DataGrid Grid.Row="0"
+              ItemsSource="{Binding FilteredObjectives}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              CanUserResizeColumns="True"
+              GridLinesVisibility="All"
+              BorderThickness="1"
+              VerticalScrollBarVisibility="Auto"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="ApiKey" Binding="{Binding ApiKeyName}" Width="SizeToHeader" />
+        <DataGridTextColumn Header="Type" Binding="{Binding ApiEndpoint}" Width="Auto" />
+        <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="Auto" />
+        <DataGridTextColumn Header="Track" Binding="{Binding Track}" Width="SizeToHeader" />
+        <DataGridTemplateColumn Header="Progress" Width="*">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Grid ColumnDefinitions="Auto,*">
+                <TextBlock Grid.Column="0"
+                           Text="{Binding ., Converter={StaticResource ProgressConverter}}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Width="60"
+                           Margin="0,0,10,0"/>
+                <ProgressBar Grid.Column="1"
+                             Minimum="0"
+                             Maximum="100"
+                             Value="{Binding ., Converter={StaticResource ProgressPercentageConverter}}"
+                             Height="20"
+                             VerticalAlignment="Center"
+                             Margin="0,0,10,0"/>
+              </Grid>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridCheckBoxColumn Header="Claimed?" Binding="{Binding Claimed}" Width="SizeToHeader" />
+        <DataGridTextColumn Header="Others" Binding="{Binding Others}" MinWidth="100" Width="Auto" />
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+
+</UserControl>
