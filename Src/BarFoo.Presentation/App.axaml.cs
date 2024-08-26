@@ -208,7 +208,6 @@ public partial class App : Application
         services.AddTransient<StatusBarViewModel>();
         services.AddTransient<FilterViewModel>();
         services.AddTransient<ObjectivesViewModel>();
-        services.AddTransient<DataViewModel>();
         services.AddTransient<ApiKeyViewModel>();
         services.AddTransient<MainViewModel>();
     }

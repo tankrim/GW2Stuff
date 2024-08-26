@@ -62,8 +62,8 @@
                  Foreground="{DynamicResource SystemBaseMediumHighColor}">
         <TextBlock.Text>
           <MultiBinding StringFormat="{}Visible: {0} Loaded: {1}">
-            <Binding Path="FilteredObjectives.Count" FallbackValue="0" />
-            <Binding Path="LoadedObjectives.Count" FallbackValue="0"/>
+            <Binding Path="FilteredObjectivesCount" FallbackValue="0" />
+            <Binding Path="LoadedObjectivesCount" FallbackValue="0"/>
           </MultiBinding>
         </TextBlock.Text>
       </TextBlock>

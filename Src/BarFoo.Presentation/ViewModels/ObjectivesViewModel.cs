@@ -11,31 +11,30 @@ using Microsoft.Extensions.Logging;
 
 namespace BarFoo.Presentation.ViewModels;
 
-public partial class ObjectivesViewModel : ViewModelBase, IRecipient<FilterChangedMessage>, IRecipient<ApiKeyUpdatedMessage>
+public partial class ObjectivesViewModel : ViewModelBase, IDisposable
 {
     private readonly IStore _store;
     private readonly ILogger<ObjectivesViewModel> _logger;
 
     [ObservableProperty]
-    private ObservableCollection<ObjectiveWithOthersDto> _objectives;
+    private ObservableCollection<ObjectiveWithOthersDto> _objectives = new();
 
     [ObservableProperty]
-    private ObservableCollection<ObjectiveWithOthersDto> _filteredObjectives;
+    private ObservableCollection<ObjectiveWithOthersDto> _filteredObjectives = new();
+
+    private FilterViewModel _currentFilter;
 
     public ObjectivesViewModel(
+        FilterViewModel filterViewModel,
         IStore store,
         ILogger<ObjectivesViewModel> logger)
     {
+        _currentFilter = filterViewModel ?? throw new ArgumentNullException(nameof(filterViewModel));
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _objectives = new ObservableCollection<ObjectiveWithOthersDto>();
-        _filteredObjectives = new ObservableCollection<ObjectiveWithOthersDto>();
 
-        WeakReferenceMessenger.Default.Register<FilterChangedMessage>(this);
-        WeakReferenceMessenger.Default.Register<ApiKeyUpdatedMessage>(this);
-
-        Objectives.CollectionChanged += (_, _) => OnObjectivesChanged(Objectives);
-        FilteredObjectives.CollectionChanged += (_, _) => OnFilteredObjectivesChanged(FilteredObjectives);
+        WeakReferenceMessenger.Default.Register<FilterChangedMessage>(this, HandleFilterChanged);
+        WeakReferenceMessenger.Default.Register<ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
     }
 
     public async Task LoadObjectivesAsync()
@@ -48,8 +47,9 @@ public partial class ObjectivesViewModel : ViewModelBase, IRecipient<FilterChang
             {
                 Objectives.Add(objective);
             }
-            FilterObjectives(null);
             _logger.LogInformation("Loaded {Count} objectives", Objectives.Count);
+            ApplyCurrentFilter();
+            WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
         }
         catch (Exception ex)
         {
@@ -57,64 +57,52 @@ public partial class ObjectivesViewModel : ViewModelBase, IRecipient<FilterChang
         }
     }
 
-    public void Receive(FilterChangedMessage message)
+    private void ApplyCurrentFilter()
     {
-        FilterObjectives(message.Value);
+        try
+        {
+            var filtered = Objectives.Where(o =>
+                (!_currentFilter.FilterDaily || o.ApiEndpoint == "daily") &&
+                (!_currentFilter.FilterWeekly || o.ApiEndpoint == "weekly") &&
+                (!_currentFilter.FilterSpecial || o.ApiEndpoint == "special") &&
+                (!_currentFilter.FilterCompleted || !o.Claimed) &&
+                (!_currentFilter.FilterPvE || o.Track == "PvE") &&
+                (!_currentFilter.FilterPvP || o.Track == "PvP") &&
+                (!_currentFilter.FilterWvW || o.Track == "WvW") &&
+                _currentFilter.ApiKeyFilters.Any(af => af.IsSelected && af.ApiKeyName == o.ApiKeyName)
+            );
+
+            FilteredObjectives.Clear();
+            foreach (var objective in filtered)
+            {
+                FilteredObjectives.Add(objective);
+            }
+
+            _logger.LogInformation("Filter applied. Filtered objectives count: {Count}", FilteredObjectives.Count);
+            WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while applying filter");
+        }
     }
 
-    public async void Receive(ApiKeyUpdatedMessage message)
+    private void HandleFilterChanged(object recipient, FilterChangedMessage message)
+    {
+        ApplyCurrentFilter();
+        WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
+    }
+
+    private async void HandleApiKeyStateChanged(object recipient, ApiKeyStateChangedMessage message)
     {
         await LoadObjectivesAsync();
-    }
-
-    private void FilterObjectives(FilterViewModel? filter)
-    {
-        IEnumerable<ObjectiveWithOthersDto> filtered = Objectives;
-
-        if (filter != null)
-        {
-            filtered = filtered.Where(o =>
-                (!filter.FilterDaily || o.ApiEndpoint == "daily") &&
-                (!filter.FilterWeekly || o.ApiEndpoint == "weekly") &&
-                (!filter.FilterSpecial || o.ApiEndpoint == "special") &&
-                (!filter.FilterCompleted || o.Claimed) &&
-                (!filter.FilterPvE || o.Track == "PvE") &&
-                (!filter.FilterPvP || o.Track == "PvP") &&
-                (!filter.FilterWvW || o.Track == "WvW") &&
-                filter.ApiKeyFilters.Any(af => af.IsSelected && af.ApiKeyName == o.ApiKeyName)
-            );
-        }
-
-        FilteredObjectives.Clear();
-        foreach (var objective in filtered)
-        {
-            FilteredObjectives.Add(objective);
-        }
-    }
-
-    partial void OnObjectivesChanged(ObservableObject value);
-    partial void OnObjectivesChanged(ObservableCollection<ObjectiveWithOthersDto> value)
-    {
-        WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(Objectives), value));
-    }
-
-    partial void OnFilteredObjectivesChanged(ObservableObject value);
-    partial void OnFilteredObjectivesChanged(ObservableCollection<ObjectiveWithOthersDto> value)
-    {
-        WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), value));
+        WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
     }
 
     public void Dispose()
     {
-        WeakReferenceMessenger.Default.Unregister<ObjectivesChangedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ApiKeyUpdatedMessage>(this);
-    }
-}
-
-public sealed class ObjectivesChangedMessage : ValueChangedMessage<(string PropertyName, ObservableCollection<ObjectiveWithOthersDto> Value)>
-{
-    public ObjectivesChangedMessage(string propertyName, ObservableCollection<ObjectiveWithOthersDto> value)
-        : base((propertyName, value))
-    {
+        WeakReferenceMessenger.Default.Unregister<FilterChangedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ApiKeyStateChangedMessage>(this);
+        GC.SuppressFinalize(this);
     }
 }

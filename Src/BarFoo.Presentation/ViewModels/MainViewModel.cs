@@ -1,10 +1,8 @@
-﻿using System.Windows;
+﻿using BarFoo.Core.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-
-using BarFoo.Core.Services;
 
 using Microsoft.Extensions.Logging;
 
@@ -31,71 +29,33 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         IStore store,
         ILogger<MainViewModel> logger)
     {
-        ApiKeyVM = apiKeyVM;
-        ObjectivesVM = objectivesVM;
-        FilterVM = filterVM;
-        StatusBarVM = statusBarVM;
-        _store = store;
-        _logger = logger;
+        ApiKeyVM = apiKeyVM ?? throw new ArgumentNullException(nameof(apiKeyVM));
+        ObjectivesVM = objectivesVM ?? throw new ArgumentNullException(nameof(objectivesVM));
+        FilterVM = filterVM ?? throw new ArgumentNullException(nameof(filterVM));
+        StatusBarVM = statusBarVM ?? throw new ArgumentNullException(nameof(statusBarVM));
+        _store = store ?? throw new ArgumentNullException(nameof(store));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        RegisterMessengers();
-    }
-
-    private void RegisterMessengers()
-    {
-        WeakReferenceMessenger.Default.Register<LoadedApiKeysMessage>(this, async (r, m) =>
-        {
-            _logger.LogInformation("MainViewModel received {Message} with: {Value}", m, m.Value);
-            await ObjectivesVM.LoadObjectivesAsync();
-        });
-
-        WeakReferenceMessenger.Default.Register<ApiKeyAddedMessage>(this, async (r, m) =>
-        {
-            _logger.LogInformation("MainViewModel received {Message} with: {Value}", m, m.Value);
-            await ObjectivesVM.LoadObjectivesAsync();
-        });
-
-        WeakReferenceMessenger.Default.Register<ApiKeyDeletedMessage>(this, async (r, m) =>
-        {
-            _logger.LogInformation("MainViewModel received {Message} with: {Value}", m, m.Value);
-            await ObjectivesVM.LoadObjectivesAsync();
-        });
-
-        WeakReferenceMessenger.Default.Register<ApiKeyUpdatedMessage>(this, async (r, m) =>
-        {
-            _logger.LogInformation("MainViewModel received {Message} with: {Value}", m, m.Value);
-            await ObjectivesVM.LoadObjectivesAsync();
-        });
-
-        WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, (r, m) =>
-        {
-            _logger.LogInformation("MainViewModel received {Message} with: {Value}", m, m.Value);
-            StatusBarVM.SetIsUpdatingTemporarily();
-        });
+        WeakReferenceMessenger.Default.Register<ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
+        WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, HandleIsUpdating);
     }
 
     public async Task InitializeAsync()
     {
         _logger.LogInformation("Initializing MainViewModel");
+        await _store.InitializeAsync();
         await ApiKeyVM.LoadApiKeysAsync();
-        var apiKeys = await _store.GetAllApiKeysAsync();
+        // Ensure FilterVM is updated with API keys before loading objectives
+        await Task.Delay(100); // Small delay to ensure messages are processed
         await ObjectivesVM.LoadObjectivesAsync();
-        _logger.LogInformation("MainViewModel initialization completed");
     }
 
     public void Dispose()
     {
-        Dispose(true);
+        WeakReferenceMessenger.Default.Unregister<ApiKeyStateChangedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<IsUpdatingMessage>(this);
+        ObjectivesVM.Dispose();
         GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            ObjectivesVM.Dispose();
-            // Dispose other disposable resources...
-        }
     }
 
     [RelayCommand]
@@ -104,4 +64,18 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         IsPaneOpen = !IsPaneOpen;
         ApiKeyVM.IsPaneOpen = IsPaneOpen;
     }
+
+    private async void HandleApiKeyStateChanged(object recipient, ApiKeyStateChangedMessage message)
+    {
+        await ObjectivesVM.LoadObjectivesAsync();
+    }
+
+    private void HandleIsUpdating(object recipient, IsUpdatingMessage message)
+    {
+        StatusBarVM.SetIsUpdatingTemporarily();
+    }
+}
+
+public sealed class ApiKeyStateChangedMessage
+{
 }

@@ -2,23 +2,25 @@
 
 using Avalonia.Threading;
 
+using BarFoo.Core.Services;
 using BarFoo.Infrastructure.DTOs;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 
 namespace BarFoo.Presentation.ViewModels;
 
-public partial class StatusBarViewModel : ViewModelBase, IRecipient<ObjectivesChangedMessage>
+public partial class StatusBarViewModel : ViewModelBase, IDisposable
 {
     [ObservableProperty]
     private bool _isUpdating;
 
     [ObservableProperty]
-    private ObservableCollection<ObjectiveWithOthersDto> _loadedObjectives;
+    private int _loadedObjectivesCount;
 
     [ObservableProperty]
-    private ObservableCollection<ObjectiveWithOthersDto> _filteredObjectives;
+    private int _filteredObjectivesCount;
 
     private readonly DispatcherTimer _timer;
 
@@ -29,23 +31,26 @@ public partial class StatusBarViewModel : ViewModelBase, IRecipient<ObjectivesCh
             Interval = TimeSpan.FromSeconds(5)
         };
         _timer.Tick += Timer_Tick;
-        LoadedObjectives = [];
-        FilteredObjectives = [];
 
-        // Register for messages
-        WeakReferenceMessenger.Default.Register<ObjectivesChangedMessage>(this);
+        WeakReferenceMessenger.Default.Register<ObjectivesChangedMessage>(this, HandleObjectivesChanged);
+        WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, HandleIsUpdating);
     }
 
-    public void Receive(ObjectivesChangedMessage message)
+    private void HandleObjectivesChanged(object recipient, ObjectivesChangedMessage message)
     {
         if (message.Value.PropertyName == nameof(ObjectivesViewModel.Objectives))
         {
-            LoadedObjectives = message.Value.Value;
+            LoadedObjectivesCount = message.Value.Value.Count;
         }
         if (message.Value.PropertyName == nameof(ObjectivesViewModel.FilteredObjectives))
         {
-            FilteredObjectives = message.Value.Value;
+            FilteredObjectivesCount = message.Value.Value.Count;
         }
+    }
+
+    private void HandleIsUpdating(object recipient, IsUpdatingMessage message)
+    {
+        SetIsUpdatingTemporarily();
     }
 
     public void SetIsUpdatingTemporarily()
@@ -54,7 +59,7 @@ public partial class StatusBarViewModel : ViewModelBase, IRecipient<ObjectivesCh
         _timer.Start();
     }
 
-    private void Timer_Tick(object sender, EventArgs e)
+    private void Timer_Tick(object? sender, EventArgs e)
     {
         IsUpdating = false;
         _timer.Stop();
@@ -65,5 +70,13 @@ public partial class StatusBarViewModel : ViewModelBase, IRecipient<ObjectivesCh
         _timer.Stop();
         _timer.Tick -= Timer_Tick;
         WeakReferenceMessenger.Default.Unregister<ObjectivesChangedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<IsUpdatingMessage>(this);
+        GC.SuppressFinalize(this);
     }
+}
+
+public sealed class ObjectivesChangedMessage : ValueChangedMessage<(string PropertyName, ObservableCollection<ObjectiveWithOthersDto> Value)>
+{
+    public ObjectivesChangedMessage(string propertyName, ObservableCollection<ObjectiveWithOthersDto> value)
+        : base((propertyName, value)) { }
 }

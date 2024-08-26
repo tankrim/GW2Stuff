@@ -53,15 +53,13 @@ public partial class ApiKeyViewModel : ViewModelBase
             {
                 ApiKeys.Add(apiKey);
             }
-
-            _logger.LogInformation("Loaded {Count} apiKeys", ApiKeys.Count);
-            var loadedApiKeyNames = ApiKeys.Select(x => x.Name);
-            WeakReferenceMessenger.Default.Send(new LoadedApiKeysMessage(loadedApiKeyNames));
-            _logger.LogInformation("ApiKeyViewModel sent LoadedApiKeysMessage with: {ApiKeyNames} ", loadedApiKeyNames);
+            _logger.LogInformation("Loaded {Count} API keys", ApiKeys.Count);
+            WeakReferenceMessenger.Default.Send(new LoadedApiKeysMessage(ApiKeys));
+            NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading apiKeys");
+            _logger.LogError(ex, "Error loading API keys");
         }
     }
 
@@ -70,27 +68,19 @@ public partial class ApiKeyViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Token))
         {
-            _logger.LogWarning("Tried to add an apiKey with invalid name or token");
+            _logger.LogWarning("Attempted to add an API key with invalid name or token");
             return;
         }
 
-        var apiKey = await _store.CreateApiKeyAsync(Name, Token);
-
         try
         {
+            var apiKey = await _store.CreateApiKeyAsync(Name, Token);
             ApiKeys.Add(apiKey);
-
-            Name = string.Empty;
-            Token = string.Empty;
-
-            WeakReferenceMessenger.Default.Send<ApiKeyAddedMessage>(new ApiKeyAddedMessage(apiKey));
-            _logger.LogInformation("ApiKeyViewModel sent ApiKeyAddedMessage for {ApiKeyName}", apiKey.Name);
+            NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to add apiKey {ApiKey}", apiKey);
-
-            await RemoveApiKeyAsync(apiKey);
+            _logger.LogError(ex, "Failed to add API key");
         }
     }
 
@@ -99,32 +89,27 @@ public partial class ApiKeyViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanRemoveSelectedApiKey))]
     private async Task RemoveSelectedApiKeyAsync()
     {
-        if (SelectedApiKey is null)
+        if (SelectedApiKey == null)
         {
-            throw new Exception("SelectedApiKey is null");
+            _logger.LogWarning("Attempted to remove an API key when no API key was selected");
+            return;
         }
-
-        var apiKeyToRemove = SelectedApiKey;
 
         try
         {
-            await _store.DeleteApiKeyAsync(apiKeyToRemove.Name);
-            ApiKeys.Remove(apiKeyToRemove);
-            _logger.LogInformation("ApiKey removed: {apiKey}", apiKeyToRemove);
-
-            WeakReferenceMessenger.Default.Send<ApiKeyDeletedMessage>(new ApiKeyDeletedMessage(apiKeyToRemove));
-            _logger.LogInformation("ApiKeyViewModel sent ApiKeyDeletedMessage for {ApiKeyName}", apiKeyToRemove.Name);
+            await _store.DeleteApiKeyAsync(SelectedApiKey.Name);
+            ApiKeys.Remove(SelectedApiKey);
+            NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to remove {apiKey}", apiKeyToRemove);
+            _logger.LogError(ex, "Failed to remove API key: {ApiKey}", SelectedApiKey.Name);
         }
-        finally
-        {
-            SelectedApiKey = null;
-        }
+    }
 
-        _logger.LogWarning("Tried to remove an apiKey when no apiKey was selected.");
+    private void NotifyApiKeyStateChanged()
+    {
+        WeakReferenceMessenger.Default.Send(new ApiKeyStateChangedMessage());
     }
 
     private bool CanRemoveSelectedApiKey() => SelectedApiKey is not null;
@@ -145,22 +130,20 @@ public partial class ApiKeyViewModel : ViewModelBase
     }
 }
 
-public sealed class ApiKeyAddedMessage : ValueChangedMessage<ApiKeyDto>
-{
-    public ApiKeyAddedMessage(ApiKeyDto apiKey) : base(apiKey)
-    {
-    }
-}
-
 public sealed class ApiKeyDeletedMessage : ValueChangedMessage<ApiKeyDto>
 {
-    public ApiKeyDeletedMessage(ApiKeyDto apiKey) : base(apiKey)
-    {
-    }
+    public ApiKeyDeletedMessage(ApiKeyDto dto)
+        : base(dto) { }
 }
-public sealed class LoadedApiKeysMessage : ValueChangedMessage<IEnumerable<string>>
+
+public sealed class LoadedApiKeysMessage : ValueChangedMessage<IEnumerable<ApiKeyDto>>
 {
-    public LoadedApiKeysMessage(IEnumerable<string> apiKeyNames) : base(apiKeyNames)
-    {
-    }
+    public LoadedApiKeysMessage(IEnumerable<ApiKeyDto> dtos)
+        : base(dtos) { }
+}
+
+public sealed class ApiKeyAddedMessage : ValueChangedMessage<ApiKeyDto>
+{
+    public ApiKeyAddedMessage(ApiKeyDto dto)
+        : base(dto) { }
 }
