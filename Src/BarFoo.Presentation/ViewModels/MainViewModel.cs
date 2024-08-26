@@ -45,8 +45,6 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _logger.LogInformation("Initializing MainViewModel");
         await _store.InitializeAsync();
         await ApiKeyVM.LoadApiKeysAsync();
-        // Ensure FilterVM is updated with API keys before loading objectives
-        await Task.Delay(100); // Small delay to ensure messages are processed
         await ObjectivesVM.LoadObjectivesAsync();
     }
 

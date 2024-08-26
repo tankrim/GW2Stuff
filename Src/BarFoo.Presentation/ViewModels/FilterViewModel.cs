@@ -41,6 +41,7 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        _logger.LogDebug("FilterViewModel property changed: {PropertyName}", e.PropertyName);
         SendFilterChangedMessage();
     }
 
@@ -67,11 +68,18 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
 
     private void OnApiKeyFilterPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        SendFilterChangedMessage();
+        if (e.PropertyName == nameof(ApiKeyFilter.IsSelected))
+        {
+            _logger.LogDebug("ApiKeyFilter IsSelected changed");
+            SendFilterChangedMessage();
+        }
     }
 
     private void SendFilterChangedMessage()
     {
+        _logger.LogDebug("FilterViewModel will send FilterChangedMessage. State: daily={fd}, weekly={fw}, special={fs}, pve={fpve}, pvp={fpvp}, wvw={fwvw}, completed={fc}, apiKeys={ak}",
+            FilterDaily, FilterWeekly, FilterSpecial, FilterPvE, FilterPvP, FilterWvW, FilterCompleted,
+            string.Join(", ", ApiKeyFilters.Where(f => f.IsSelected).Select(f => f.ApiKeyName)));
         WeakReferenceMessenger.Default.Send(new FilterChangedMessage(this));
     }
 

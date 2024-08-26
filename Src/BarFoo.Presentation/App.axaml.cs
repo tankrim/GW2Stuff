@@ -206,7 +206,7 @@ public partial class App : Application
     private static void ConfigureViewModels(IServiceCollection services)
     {
         services.AddTransient<StatusBarViewModel>();
-        services.AddTransient<FilterViewModel>();
+        services.AddSingleton<FilterViewModel>();
         services.AddTransient<ObjectivesViewModel>();
         services.AddTransient<ApiKeyViewModel>();
         services.AddTransient<MainViewModel>();
