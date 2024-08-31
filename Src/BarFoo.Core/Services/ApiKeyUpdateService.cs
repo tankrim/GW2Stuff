@@ -10,7 +10,7 @@ public class ApiKeyUpdateService : BackgroundService
 {
     private readonly IStore _store;
     private readonly ILogger<ApiKeyUpdateService> _logger;
-    private readonly TimeSpan _updateInterval = TimeSpan.FromMinutes(1);
+    private readonly TimeSpan _updateInterval = TimeSpan.FromMinutes(15);
 
     public ApiKeyUpdateService(IStore store, ILogger<ApiKeyUpdateService> logger)
     {
