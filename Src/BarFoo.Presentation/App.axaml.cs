@@ -10,6 +10,7 @@ using BarFoo.Data.Contexts;
 using BarFoo.Data.Repositories;
 using BarFoo.Infrastructure.ApiClients;
 using BarFoo.Infrastructure.Mappings;
+using BarFoo.Presentation.Services;
 using BarFoo.Presentation.ViewModels;
 using BarFoo.Presentation.Views;
 
@@ -190,7 +191,9 @@ public partial class App : Application
         // Register application services
         services.AddScoped<IApiKeyService, ApiKeyService>();
         services.AddScoped<IFetcherService, FetcherService>();
-        services.AddSingleton<IStore, Store>();//
+        services.AddSingleton<IStore, Store>();
+        services.AddTransient<IClipboardService, ClipboardService>();
+        services.AddTransient<IPactSupplyNetworkAgenService, PactSupplyNetworkAgentService>();
 
         // Register background services
         services.AddHostedService<ApiKeyUpdateService>();
