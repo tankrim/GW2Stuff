@@ -8,7 +8,7 @@
              x:Class="BarFoo.Presentation.Views.ApiKeyView"
              x:DataType="vm:ApiKeyViewModel"
              xmlns:s="using:Avalonia.Styling">
-  
+
   <StackPanel Margin="10" IsVisible="{Binding IsPaneOpen}">
     <TextBlock Text="Api Key Management"
                Margin="0,0,0,10"
@@ -17,15 +17,23 @@
     <TextBox Text="{Binding Token}"
              Watermark="Insert the Api Key here"
              Margin="0 0 0 5"/>
-    
+
     <TextBox Text="{Binding Name}"
              Watermark="Give the Api Key a name"
              Margin="0 5 0 5"/>
 
     <Button Command="{Binding AddApiKeyCommand}"
-            Content="Add Api Key"
             Margin="0 10 0 10"
-            Classes="AddButton AddButton:pointerover"/>
+            Classes="Button">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Add Api Key"
+                   VerticalAlignment="Center"/>
+        <Image Source="{SvgImage /Assets/person_add.svg}"
+               Width="24"
+               Height="24"
+               Margin="10 0 0 0"/>
+      </StackPanel>
+    </Button>
 
     <ListBox ItemsSource="{Binding ApiKeys}"
              SelectedItem="{Binding SelectedApiKey}"
@@ -34,13 +42,21 @@
       <ListBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Text="{Binding Name}"/>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
     </ListBox>
-    
+
     <Button Command="{Binding RemoveSelectedApiKeyCommand}"
-            Content="Delete Selected Api Key"
-            Classes="DeleteButton DeleteButton:pointerover"/>
+            Classes="Button">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Delete Selected Api Key"
+                   VerticalAlignment="Center"/>
+        <Image Source="{SvgImage /Assets/person_remove.svg}"
+               Width="24"
+               Height="24"
+               Margin="10 0 0 0"/>
+      </StackPanel>
+    </Button>
   </StackPanel>
 
 </UserControl>

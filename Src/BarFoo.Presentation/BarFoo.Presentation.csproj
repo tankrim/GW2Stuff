@@ -14,8 +14,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\copy.svg" />
+    <None Remove="Assets\menu.svg" />
+    <None Remove="Assets\person_add.svg" />
+    <None Remove="Assets\person_remove.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Svg" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
@@ -44,6 +52,9 @@
   <ItemGroup>
     <Compile Update="Views\ApiKeyView.axaml.cs">
       <DependentUpon>ApiKeyView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\PactSupplyNetworkAgentView.axaml.cs">
+      <DependentUpon>PactSupplyNetworkAgentView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 

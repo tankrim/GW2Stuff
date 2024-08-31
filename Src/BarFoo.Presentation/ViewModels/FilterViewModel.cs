@@ -16,6 +16,7 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
     [ObservableProperty] private bool _filterDaily;
     [ObservableProperty] private bool _filterWeekly;
     [ObservableProperty] private bool _filterSpecial;
+    [ObservableProperty] private bool _filterNotCompleted;
     [ObservableProperty] private bool _filterCompleted;
     [ObservableProperty] private bool _filterPvE;
     [ObservableProperty] private bool _filterPvP;
@@ -90,7 +91,7 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
 
     private void HandleApiKeyDeleted(object recipient, ApiKeyDeletedMessage message)
     {
-        var filterToRemove = ApiKeyFilters.FirstOrDefault(f => f.ApiKeyName == message.Value.Name);
+        var filterToRemove = ApiKeyFilters.FirstOrDefault(f => f.ApiKeyName == message.Value);
         if (filterToRemove != null)
         {
             ApiKeyFilters.Remove(filterToRemove);

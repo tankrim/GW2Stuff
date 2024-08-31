@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:BarFoo.Presentation.ViewModels"
+             x:Class="BarFoo.Presentation.Views.PactSupplyNetworkAgentView"
+             x:DataType="vm:PactSupplyNetworkAgentViewModel">
+  <Button Command="{Binding CopyPSNALinksToClipboard}"
+          Classes="Button"
+          ToolTip.Tip="Copy Today's Pact Supply Network ">
+    <StackPanel Orientation="Horizontal">
+      <TextBlock Text="PSNA" VerticalAlignment="Center"/>
+      <Image Source="{SvgImage /Assets/copy.svg}"
+             Width="24"
+             Height="24"
+             Margin="10 0 0 0"/>
+    </StackPanel>
+  </Button>
+</UserControl>

@@ -7,15 +7,15 @@
              x:Class="BarFoo.Presentation.Views.FilterView"
              x:DataType="vm:FilterViewModel">
 
-  <Grid Grid.ColumnDefinitions="*,Auto">
+  <Grid Grid.ColumnDefinitions="Auto,Auto">
     <StackPanel Grid.Column="0"
                 Orientation="Horizontal"
-                Spacing="10"
-                Margin="10,20,10,10">
+                Spacing="10">
       <CheckBox Content="Daily" IsChecked="{Binding FilterDaily}"/>
       <CheckBox Content="Weekly" IsChecked="{Binding FilterWeekly}"/>
       <CheckBox Content="Special" IsChecked="{Binding FilterSpecial}"/>
-      <CheckBox Content="Completed" IsChecked="{Binding FilterCompleted}"/>
+      <CheckBox Content="Incomplete" IsChecked="{Binding FilterNotCompleted}"/>
+      <CheckBox Content="Complete" IsChecked="{Binding FilterCompleted}"/>
       <CheckBox Content="PvE" IsChecked="{Binding FilterPvE}"/>
       <CheckBox Content="PvP" IsChecked="{Binding FilterPvP}"/>
       <CheckBox Content="WvW" IsChecked="{Binding FilterWvW}"/>
@@ -23,7 +23,8 @@
 
     <ItemsControl Grid.Column="1"
                   ItemsSource="{Binding ApiKeyFilters}"
-                  Margin="10,20,10,10">
+                  VerticalAlignment="Center"
+                  Margin="50 0 0 0">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
           <WrapPanel Orientation="Horizontal"/>

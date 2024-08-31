@@ -41,6 +41,7 @@
                            Width="60"
                            Margin="0,0,10,0"/>
                 <ProgressBar Grid.Column="1"
+                             Classes="weaker"
                              Minimum="0"
                              Maximum="100"
                              Value="{Binding ., Converter={StaticResource ProgressPercentageConverter}}"

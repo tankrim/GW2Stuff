@@ -8,12 +8,23 @@ using BarFoo.Core.Services;
 using BarFoo.Infrastructure.DTOs;
 
 using Microsoft.Extensions.Logging;
+using Avalonia.Input.Platform;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Controls.Platform;
+using Avalonia.Platform.Storage;
+using Avalonia.Controls.ApplicationLifetimes;
+using static System.Net.Mime.MediaTypeNames;
+using CommunityToolkit.Mvvm.Input;
+using System.Text.RegularExpressions;
+using BarFoo.Presentation.Services;
 
 namespace BarFoo.Presentation.ViewModels;
 
 public partial class ObjectivesViewModel : ViewModelBase, IDisposable
 {
     private readonly IStore _store;
+    private readonly IClipboardService _clipboardService;
     private readonly ILogger<ObjectivesViewModel> _logger;
 
     [ObservableProperty]
@@ -27,10 +38,12 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
     public ObjectivesViewModel(
         FilterViewModel filterViewModel,
         IStore store,
+        IClipboardService clipboardService,
         ILogger<ObjectivesViewModel> logger)
     {
         _currentFilter = filterViewModel ?? throw new ArgumentNullException(nameof(filterViewModel));
         _store = store ?? throw new ArgumentNullException(nameof(store));
+        _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         WeakReferenceMessenger.Default.Register<FilterChangedMessage>(this, HandleFilterChanged);
@@ -71,6 +84,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
                  _currentFilter.FilterWvW && o.Track == "WvW" ||
                  (!_currentFilter.FilterPvE && !_currentFilter.FilterPvP && !_currentFilter.FilterWvW)) &&
                 (!_currentFilter.FilterCompleted || !o.Claimed) &&
+                (!_currentFilter.FilterNotCompleted || !o.Claimed) &&
                 _currentFilter.ApiKeyFilters.Any(af => af.IsSelected && af.ApiKeyName == o.ApiKeyName)
             ).ToList();
 
@@ -106,6 +120,23 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
     {
         await LoadObjectivesAsync();
         WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
+    }
+
+    [RelayCommand]
+    private async Task CopyFilteredObjectivesToClipboardClick()
+    {
+
+        if (FilteredObjectives != null && FilteredObjectives.Count != 0)
+        {
+            var groupedTitles = FilteredObjectives
+                .GroupBy(o => o.ApiKeyName)
+                .Select(g => string.Join(" ~~ ",
+                    new[] { g.Key }.Concat(g.Select(o => o.Title))
+                ));
+
+            var groupedTitlesStrings = string.Join(" || ", groupedTitles);
+            await _clipboardService.SetTextAsync(groupedTitlesStrings);
+        }
     }
 
     public void Dispose()

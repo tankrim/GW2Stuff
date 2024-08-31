@@ -193,7 +193,7 @@ public partial class App : Application
         services.AddScoped<IFetcherService, FetcherService>();
         services.AddSingleton<IStore, Store>();
         services.AddTransient<IClipboardService, ClipboardService>();
-        services.AddTransient<IPactSupplyNetworkAgenService, PactSupplyNetworkAgentService>();
+        services.AddTransient<IPactSupplyNetworkAgentService, PactSupplyNetworkAgentService>();
 
         // Register background services
         services.AddHostedService<ApiKeyUpdateService>();
@@ -209,6 +209,7 @@ public partial class App : Application
     private static void ConfigureViewModels(IServiceCollection services)
     {
         services.AddTransient<StatusBarViewModel>();
+        services.AddTransient<PactSupplyNetworkAgentViewModel>();
         services.AddSingleton<FilterViewModel>();
         services.AddTransient<ObjectivesViewModel>();
         services.AddTransient<ApiKeyViewModel>();

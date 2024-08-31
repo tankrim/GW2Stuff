@@ -76,6 +76,9 @@ public partial class ApiKeyViewModel : ViewModelBase
         {
             var apiKey = await _store.CreateApiKeyAsync(Name, Token);
             ApiKeys.Add(apiKey);
+            Name = string.Empty;
+            Token = string.Empty;
+            WeakReferenceMessenger.Default.Send(new ApiKeyAddedMessage(apiKey));
             NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
@@ -97,8 +100,10 @@ public partial class ApiKeyViewModel : ViewModelBase
 
         try
         {
+            var keyName = SelectedApiKey.Name;
             await _store.DeleteApiKeyAsync(SelectedApiKey.Name);
             ApiKeys.Remove(SelectedApiKey);
+            WeakReferenceMessenger.Default.Send(new ApiKeyDeletedMessage(keyName));
             NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
@@ -130,10 +135,10 @@ public partial class ApiKeyViewModel : ViewModelBase
     }
 }
 
-public sealed class ApiKeyDeletedMessage : ValueChangedMessage<ApiKeyDto>
+public sealed class ApiKeyDeletedMessage : ValueChangedMessage<string>
 {
-    public ApiKeyDeletedMessage(ApiKeyDto dto)
-        : base(dto) { }
+    public ApiKeyDeletedMessage(string keyName)
+        : base(keyName) { }
 }
 
 public sealed class LoadedApiKeysMessage : ValueChangedMessage<IEnumerable<ApiKeyDto>>

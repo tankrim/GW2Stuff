@@ -3,37 +3,35 @@
              x:Class="BarFoo.Presentation.App"
              xmlns:local="using:BarFoo.Presentation"
              xmlns:s="using:Avalonia.Styling"
-             RequestedThemeVariant="Light">
+             RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
   <Application.Styles>
-    <FluentTheme/>
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <ColorPaletteResources x:Key="Light" Accent="#ff0073cf" AltHigh="White" AltLow="White" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ffcccccc" BaseMedium="#ff898989" BaseMediumHigh="#ff5d5d5d" BaseMediumLow="#ff737373" ChromeAltLow="#ff5d5d5d" ChromeBlackHigh="Black" ChromeBlackLow="#ffcccccc" ChromeBlackMedium="#ff5d5d5d" ChromeBlackMediumLow="#ff898989" ChromeDisabledHigh="#ffcccccc" ChromeDisabledLow="#ff898989" ChromeGray="#ff737373" ChromeHigh="#ffcccccc" ChromeLow="#ffececec" ChromeMedium="#ffe6e6e6" ChromeMediumLow="#ffececec" ChromeWhite="White" ListLow="#ffe6e6e6" ListMedium="#ffcccccc" RegionColor="White" />
+        <ColorPaletteResources x:Key="Dark" Accent="#ff0073cf" AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff333333" BaseMedium="#ff9a9a9a" BaseMediumHigh="#ffb4b4b4" BaseMediumLow="#ff676767" ChromeAltLow="#ffb4b4b4" ChromeBlackHigh="Black" ChromeBlackLow="#ffb4b4b4" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ff333333" ChromeDisabledLow="#ff9a9a9a" ChromeGray="Gray" ChromeHigh="Gray" ChromeLow="#ff151515" ChromeMedium="#ff1d1d1d" ChromeMediumLow="#ff2c2c2c" ChromeWhite="White" ListLow="#ff1d1d1d" ListMedium="#ff333333" RegionColor="Black" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
 
-    <StyleInclude Source="avares://BarFoo.Presentation/Styles/Icons.axaml"/>
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
 
     <!-- Buttons -->
-    <!-- AddButtons -->
-    <Style Selector="Button.AddButton">
+    <!-- Button -->
+    <Style Selector="Button.Button">
       <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
-      <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+      <Setter Property="Background" Value="{DynamicResource Primary2}"/>
 
       <Style Selector="^:pointerover /template/ ContentPresenter">
         <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
-        <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
-        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="{DynamicResource Primary1}"/>
       </Style>
-    </Style>
 
-    <!-- DeleteButtons -->
-    <Style Selector="Button.DeleteButton">
-      <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
-      <Setter Property="Background" Value="{DynamicResource DeleteButtonBgBrush}"/>
-
-      <Style Selector="^:pointerover /template/ ContentPresenter">
+      <Style Selector="^:pressed /template/ ContentPresenter">
         <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
-        <Setter Property="Background" Value="{DynamicResource DeleteButtonBgBrush}"/>
-        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="{DynamicResource Primary1}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Primary3}"/>
       </Style>
     </Style>
 
@@ -54,10 +52,92 @@
       <Setter Property="FontSize" Value="18"/>
       <Setter Property="FontWeight" Value="Bold"/>
     </Style>
-    
+
+    <Style Selector="ProgressBar.weaker">
+      <Setter Property="Foreground" Value="#7E735F"/>
+    </Style>
   </Application.Styles>
 
-  <Application.Resources>    
-    <SolidColorBrush x:Key="DeleteButtonBgBrush" Color="#CC3337"/>
+  <Application.Resources>
+    <SolidColorBrush x:Key="Primary1" Color="#FF0073CF"/>
+    <SolidColorBrush x:Key="Primary2" Color="#FF0065B5"/>
+    <SolidColorBrush x:Key="Primary3" Color="#00579C"/>
+    <SolidColorBrush x:Key="Success1" Color="#34854D"/>
+    <SolidColorBrush x:Key="Warning1" Color="#CC4D11"/>
   </Application.Resources>
 </Application>
+
+<!--
+# Buttons
+
+- Normal state:
+  - Background: ChromeLow or ListLow
+  - Text: BaseHigh
+  - Border: BaseLow
+
+- Hover state:
+  - Background: ListMedium
+  - Text: BaseHigh
+  - Border: BaseMediumLow
+
+- Pressed state:
+  - Background: ChromeMedium
+  - Text: BaseHigh
+  - Border: BaseMedium
+
+- Disabled state:
+  - Background: ChromeDisabledLow
+  - Text: BaseMediumLow
+  - Border: ChromeDisabledHigh
+
+- Focused state:
+  - All normal state colors
+  - Focus outline: Accent
+
+# Checkboxes
+
+- Unchecked state:
+  - Box background: ChromeWhite or AltMediumLow
+  - Box border: BaseMediumHigh
+  - Text: BaseHigh
+
+- Checked state:
+  - Box background: Accent
+  - Checkmark: ChromeWhite or AltHigh
+  - Text: BaseHigh
+
+- Hover state:
+  - Box border: BaseMedium
+  - Other colors same as unchecked/checked
+
+- Disabled state:
+  - Box background: ChromeDisabledLow
+  - Box border: BaseLow
+  - Text: BaseMediumLow
+  - Checkmark (if checked): BaseMediumLow
+
+# ListView
+
+- ListView container:
+  - Background: ChromeLow or AltMediumLow
+
+- List items:
+  - Normal background: ChromeWhite or AltHigh
+  - Alternate item background (if used): ListLow
+  - Text: BaseHigh
+
+- Selected item:
+  - Background: Accent
+  - Text: ChromeWhite or AltHigh
+
+- Hover item:
+  - Background: ListLow
+  - Text: BaseHigh
+
+- Focused item:
+  - Border: Accent
+
+- Disabled ListView:
+  - Background: ChromeDisabledLow
+  - Text: BaseMediumLow
+-->

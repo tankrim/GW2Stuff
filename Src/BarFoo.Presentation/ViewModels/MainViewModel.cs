@@ -16,6 +16,8 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     public ApiKeyViewModel ApiKeyVM { get; }
     public ObjectivesViewModel ObjectivesVM { get; }
     public FilterViewModel FilterVM { get; }
+
+    public PactSupplyNetworkAgentViewModel PactSupplyNetworkAgentVM { get; }
     public StatusBarViewModel StatusBarVM { get; }
 
     [ObservableProperty]
@@ -25,6 +27,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         ApiKeyViewModel apiKeyVM,
         ObjectivesViewModel objectivesVM,
         FilterViewModel filterVM,
+        PactSupplyNetworkAgentViewModel pactSupplyNetworkAgentVM,
         StatusBarViewModel statusBarVM,
         IStore store,
         ILogger<MainViewModel> logger)
@@ -32,6 +35,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         ApiKeyVM = apiKeyVM ?? throw new ArgumentNullException(nameof(apiKeyVM));
         ObjectivesVM = objectivesVM ?? throw new ArgumentNullException(nameof(objectivesVM));
         FilterVM = filterVM ?? throw new ArgumentNullException(nameof(filterVM));
+        PactSupplyNetworkAgentVM = pactSupplyNetworkAgentVM ?? throw new ArgumentNullException(nameof(pactSupplyNetworkAgentVM));
         StatusBarVM = statusBarVM ?? throw new ArgumentNullException(nameof(statusBarVM));
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
