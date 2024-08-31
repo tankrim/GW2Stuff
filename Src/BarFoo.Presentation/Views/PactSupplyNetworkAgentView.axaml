@@ -8,7 +8,8 @@
              x:DataType="vm:PactSupplyNetworkAgentViewModel">
   <Button Command="{Binding CopyPSNALinksToClipboard}"
           Classes="Button"
-          ToolTip.Tip="Copy Today's Pact Supply Network ">
+          Margin="0 15 0 0"
+          ToolTip.Tip="Copy Today's Pact Supply Network Locations to the clipboard">
     <StackPanel Orientation="Horizontal">
       <TextBlock Text="PSNA" VerticalAlignment="Center"/>
       <Image Source="{SvgImage /Assets/copy.svg}"

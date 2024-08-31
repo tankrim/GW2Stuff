@@ -51,14 +51,14 @@
                Grid.Column="0"
                Grid.ColumnSpan="2"
                HorizontalContentAlignment="Center"
-               Classes="h1">
+               Classes="h1 header">
           Guild Wars 2 Stuff
         </Label>
         
         <!-- Filters -->
         <Panel Grid.Row="1"
                Grid.Column="0"
-               Margin="10 0 0 0">
+               Margin="10 20 0 0">
           <views:FilterView DataContext="{Binding FilterVM}"/>
         </Panel>
 

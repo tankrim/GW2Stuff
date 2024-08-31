@@ -3,7 +3,7 @@
              x:Class="BarFoo.Presentation.App"
              xmlns:local="using:BarFoo.Presentation"
              xmlns:s="using:Avalonia.Styling"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Dark">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
   <Application.Styles>
@@ -19,16 +19,16 @@
     <!-- Buttons -->
     <!-- Button -->
     <Style Selector="Button.Button">
-      <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
+      <Setter Property="Foreground" Value="#FFE6E6E6"/>
       <Setter Property="Background" Value="{DynamicResource Primary2}"/>
 
       <Style Selector="^:pointerover /template/ ContentPresenter">
-        <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
+        <Setter Property="Foreground" Value="#FFE6E6E6"/>
         <Setter Property="Background" Value="{DynamicResource Primary1}"/>
       </Style>
 
       <Style Selector="^:pressed /template/ ContentPresenter">
-        <Setter Property="Foreground" Value="{DynamicResource SystemAltHighColor}"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="Background" Value="{DynamicResource Primary1}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Primary3}"/>
@@ -44,8 +44,14 @@
     
     <!-- Headings -->
     <Style Selector="Label.h1">
-      <Setter Property="FontSize" Value="36"/>
+      <Setter Property="FontSize" Value="48"/>
       <Setter Property="FontWeight" Value="DemiBold"/>
+      <Setter Property="Foreground" Value="#FFE6E6E6"/>
+    </Style>
+
+    <Style Selector="Label.header">
+      <Setter Property="Background" Value="{DynamicResource Primary3}"/>
+      <Setter Property="Padding" Value="20"/>
     </Style>
 
     <Style Selector="TextBlock.h2">
@@ -53,8 +59,9 @@
       <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 
+    <!-- ProgressBar-->
     <Style Selector="ProgressBar.weaker">
-      <Setter Property="Foreground" Value="#7E735F"/>
+      <Setter Property="Foreground" Value="{DynamicResource Secondary1}"/>
     </Style>
   </Application.Styles>
 
@@ -62,6 +69,7 @@
     <SolidColorBrush x:Key="Primary1" Color="#FF0073CF"/>
     <SolidColorBrush x:Key="Primary2" Color="#FF0065B5"/>
     <SolidColorBrush x:Key="Primary3" Color="#00579C"/>
+    <SolidColorBrush x:Key="Secondary1" Color="#7E735F"/>
     <SolidColorBrush x:Key="Success1" Color="#34854D"/>
     <SolidColorBrush x:Key="Warning1" Color="#CC4D11"/>
   </Application.Resources>
