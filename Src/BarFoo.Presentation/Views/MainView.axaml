@@ -12,7 +12,7 @@
   <UserControl.Resources>
     <converters:UpdatingConverter x:Key="UpdatingConverter"/>
   </UserControl.Resources>
-  
+
   <Grid RowDefinitions="*,auto">
 
     <!-- SplitView -->
@@ -30,7 +30,7 @@
 
           <Button
             Command="{Binding TogglePaneCommand}"
-            Classes="Button"
+            Classes="button"
             HorizontalAlignment="Right">
             <Image Source="{SvgImage /Assets/menu.svg}"
              Width="24"
@@ -47,27 +47,40 @@
       <Grid RowDefinitions="Auto, Auto,*" ColumnDefinitions="7*,3*">
 
         <!-- Header -->
-        <Label Grid.Row="0"
-               Grid.Column="0"
-               Grid.ColumnSpan="2"
-               HorizontalContentAlignment="Center"
-               Classes="h1 header">
-          Guild Wars 2 Stuff
-        </Label>
-        
-        <!-- Filters -->
-        <Panel Grid.Row="1"
-               Grid.Column="0"
-               Margin="10 20 0 0">
-          <views:FilterView DataContext="{Binding FilterVM}"/>
-        </Panel>
+        <Grid Grid.Row="0"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              ColumnDefinitions="*,Auto"
+              Classes="header">
+          <Label Grid.Column="0"
+                 HorizontalContentAlignment="Center"
+                 Classes="h1 header">
+            Guild Wars 2 Stuff
+          </Label>
 
-        <!-- PSNA -->
-        <Panel Grid.Row="1"
-                Grid.Column="2"
-                Margin="20 0 0 0">
-          <views:PactSupplyNetworkAgentView DataContext="{Binding PactSupplyNetworkAgentVM}"/>
-        </Panel>
+          <!-- PSNA -->
+          <Panel Grid.Row="1"
+                 Grid.Column="2"
+                 Margin="20 0 0 0">
+            <views:PactSupplyNetworkAgentView DataContext="{Binding PactSupplyNetworkAgentVM}"/>
+          </Panel>
+
+        </Grid>
+
+        <!-- Filters -->
+        <Grid Grid.Row="1"
+               Grid.Column="0"
+              ColumnDefinitions="*,Auto"
+               Margin="10 20 0 15">
+          <views:FilterView Grid.Column="0" DataContext="{Binding FilterVM}"/>
+
+          <Button Grid.Column="1"
+           Classes="button"
+           Command="{Binding DoManualSyncCommand}"
+           HorizontalAlignment="Right">
+            Sync
+          </Button>
+        </Grid>
 
         <!-- Objectives -->
         <Panel Grid.Row="2"
@@ -77,7 +90,7 @@
           <views:ObjectivesView DataContext="{Binding ObjectivesVM}"/>
         </Panel>
 
-        
+
       </Grid>
 
     </SplitView>
@@ -86,7 +99,7 @@
     <Grid Grid.Row="1">
       <views:StatusBarView DataContext="{Binding StatusBarVM}"/>
     </Grid>
-    
+
   </Grid>
 
 </UserControl>

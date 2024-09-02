@@ -7,8 +7,8 @@
              x:Class="BarFoo.Presentation.Views.PactSupplyNetworkAgentView"
              x:DataType="vm:PactSupplyNetworkAgentViewModel">
   <Button Command="{Binding CopyPSNALinksToClipboard}"
-          Classes="Button"
-          Margin="0 15 0 0"
+          Classes="inverted"
+          Margin="0 15 25 0"
           ToolTip.Tip="Copy Today's Pact Supply Network Locations to the clipboard">
     <StackPanel Orientation="Horizontal">
       <TextBlock Text="PSNA" VerticalAlignment="Center"/>

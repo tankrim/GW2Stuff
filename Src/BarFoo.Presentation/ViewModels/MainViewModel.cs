@@ -67,6 +67,12 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         ApiKeyVM.IsPaneOpen = IsPaneOpen;
     }
 
+    [RelayCommand]
+    private async Task DoManualSync()
+    {
+        await _store.SyncObjectivesForAllApiKeysAsync();
+    }
+
     private async void HandleApiKeyStateChanged(object recipient, ApiKeyStateChangedMessage message)
     {
         await ObjectivesVM.LoadObjectivesAsync();

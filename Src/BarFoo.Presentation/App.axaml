@@ -18,7 +18,7 @@
 
     <!-- Buttons -->
     <!-- Button -->
-    <Style Selector="Button.Button">
+    <Style Selector="Button.button">
       <Setter Property="Foreground" Value="#FFE6E6E6"/>
       <Setter Property="Background" Value="{DynamicResource Primary2}"/>
 
@@ -35,8 +35,26 @@
       </Style>
     </Style>
 
+    <Style Selector="Button.inverted">
+      
+      <Setter Property="Foreground" Value="{DynamicResource Primary2}"/>
+      <Setter Property="Background" Value="#FFE6E6E6"/>
+
+      <Style Selector="^:pointerover /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+        <Setter Property="Background" Value="#FFE6E6E6"/>
+      </Style>
+
+      <Style Selector="^:pressed /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+        <Setter Property="Background" Value="#FFE6E6E6"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="BorderBrush" Value="White"/>
+      </Style>
+    </Style>
+
     <!-- Key ListBox  -->
-    <Style Selector="ListBox.ApiKeys">
+    <Style Selector="ListBox.apiKeys">
       <Setter Property="Height" Value="200"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="5"/>
@@ -54,6 +72,10 @@
       <Setter Property="Padding" Value="20"/>
     </Style>
 
+    <Style Selector="Grid.header">
+      <Setter Property="Background" Value="{DynamicResource Primary3}"/>
+    </Style>
+    
     <Style Selector="TextBlock.h2">
       <Setter Property="FontSize" Value="18"/>
       <Setter Property="FontWeight" Value="Bold"/>
