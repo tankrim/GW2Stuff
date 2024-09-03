@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using Serilog;
 
@@ -54,12 +55,23 @@ public partial class App : Application
 
     private IHostBuilder CreateHostBuilder(string[] args = null)
     {
-        return Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration((context, config) =>
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
                 config.SetBasePath(GetBasePath())
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true))
-                    .UseSerilog()
-                    .ConfigureServices(ConfigureServices);
+                      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                      .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+                if (hostingContext.HostingEnvironment.IsDevelopment())
+                {
+                    config.AddUserSecrets<App>();
+                }
+            })
+            .UseSerilog((hostingContext, loggerConfiguration) =>
+            {
+                loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
+            })
+            .ConfigureServices(ConfigureServices);
     }
 
     private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
@@ -71,6 +83,7 @@ public partial class App : Application
         ConfigureApplicationServices(services);
         ConfigureViewModels(services);
         ConfigureViews(services);
+        services.AddSingleton<IAppSettings>(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
     }
 
     private async Task InitializeApplicationAsync(IClassicDesktopStyleApplicationLifetime desktop)
@@ -275,9 +288,15 @@ internal class AppDataPathProvider
         return fullPath;
     }
 }
-internal class AppSettings
+
+public interface IAppSettings
 {
-    public ConnectionStrings ConnectionStrings { get; set; } = new ConnectionStrings();
+    string? SelectedDirectoryPath { get; set; }
+}
+
+internal class AppSettings : IAppSettings
+{
+    public string? SelectedDirectoryPath { get; set; }
 }
 
 internal class ConnectionStrings
