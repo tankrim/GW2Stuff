@@ -61,6 +61,7 @@ public class ApiKeyUpdateService : BackgroundService
         {
             await _store.SyncObjectivesForAllApiKeysAsync();
             _logger.LogInformation("ApiKey Update Service completed scheduled update of all apikeys");
+            WeakReferenceMessenger.Default.Send(new ApiKeysUpdatedMessage());
         }
         catch (Exception ex)
         {
@@ -72,4 +73,9 @@ public class ApiKeyUpdateService : BackgroundService
 public sealed class IsUpdatingMessage : ValueChangedMessage<bool>
 {
     public IsUpdatingMessage(bool isUpdating) : base(isUpdating) { }
+}
+
+public sealed class ApiKeysUpdatedMessage : ValueChangedMessage<bool>
+{
+    public ApiKeysUpdatedMessage() : base(true) { }
 }

@@ -42,6 +42,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 
         WeakReferenceMessenger.Default.Register<ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
         WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, HandleIsUpdating);
+        WeakReferenceMessenger.Default.Register<ApiKeysUpdatedMessage>(this, HandleApiKeysUpdated);
     }
 
     public async Task InitializeAsync()
@@ -56,6 +57,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     {
         WeakReferenceMessenger.Default.Unregister<ApiKeyStateChangedMessage>(this);
         WeakReferenceMessenger.Default.Unregister<IsUpdatingMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ApiKeysUpdatedMessage>(this);
         ObjectivesVM.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -81,6 +83,12 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     private void HandleIsUpdating(object recipient, IsUpdatingMessage message)
     {
         StatusBarVM.SetIsUpdatingTemporarily();
+    }
+
+    private async void HandleApiKeysUpdated(object recipient, ApiKeysUpdatedMessage message)
+    {
+        _logger.LogInformation("Received ApiKeysUpdatedMessage. Reloading objectives.");
+        await ObjectivesVM.LoadObjectivesAsync();
     }
 }
 
