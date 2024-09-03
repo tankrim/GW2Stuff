@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <None Remove="Assets\copy.svg" />
+    <None Remove="Assets\download.svg" />
     <None Remove="Assets\menu.svg" />
     <None Remove="Assets\person_add.svg" />
     <None Remove="Assets\person_remove.svg" />

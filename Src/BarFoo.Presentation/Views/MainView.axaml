@@ -57,24 +57,56 @@
                  Classes="h1 header">
             Guild Wars 2 Stuff
           </Label>
-          
+
           <StackPanel Grid.Row="1"
                  Grid.Column="2"
-                 Margin="20 20 0 20">
+                 Margin="20 20 20 20">
 
-          <Button Grid.Row="1"
-                  Grid.Column="2"
-                  Command="{Binding ArcDpsVM.SelectDirectoryCommand}"
-                  Content="Set Guild Wars 2 Installation Directory"/>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+              <!-- ArcDPS download -->
+              <Button Grid.Row="1"
+                      Grid.Column="2"
+                      Classes="inverted"
+                      Command="{Binding ArcDpsVM.DownloadAndSaveFileCommand}"
+                      IsEnabled="{Binding ArcDpsVM.IsDownloadEnabled}"
+                      ToolTip.Tip="Download ArcDPS to the Guild Wars 2 Folder">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="Download ArcDPS" VerticalAlignment="Center"/>
+                  <Image Source="{SvgImage /Assets/download.svg}"
+                         MinWidth="24"
+                         MinHeight="24"
+                         Margin="10 0 0 0"/>
+                </StackPanel>
+              </Button>
 
-          <Button Grid.Row="1"
-                  Grid.Column="2"
-                  Command="{Binding ArcDpsVM.DownloadAndSaveFileCommand}"
-                  IsEnabled="{Binding ArcDpsVM.IsDownloadEnabled}"
-                  Content="Download ArcDPS"/>
-          
-          <!-- PSNA -->
-            <views:PactSupplyNetworkAgentView DataContext="{Binding PactSupplyNetworkAgentVM}"/>
+              <!-- Set GW2 directory -->
+              <Button Grid.Row="1"
+                      Grid.Column="2"
+                      Classes="inverted"
+                      Command="{Binding ArcDpsVM.SelectDirectoryCommand}"
+                      ToolTip.Tip="Set the Guild Wars 2 Folder"
+                      Margin="10 0 0 0">
+                <Image Source="{SvgImage /Assets/settings.svg}"
+                       MinWidth="12"
+                       MinHeight="12"
+                       HorizontalAlignment="Center"/>
+              </Button>
+            </StackPanel>
+
+            <!-- PSNA -->
+            <Button Grid.Row="1"
+                    Grid.Column="2"
+                    Command="{Binding PactSupplyNetworkAgentVM.CopyPSNALinksToClipboard}"
+                    Classes="inverted"
+                    ToolTip.Tip="Copy Today's Pact Supply Network Locations to the clipboard">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="PSNA" VerticalAlignment="Center"/>
+                <Image Source="{SvgImage /Assets/copy.svg}"
+                       MinWidth="24"
+                       MinHeight="24"
+                       Margin="10 0 0 0"/>
+              </StackPanel>
+            </Button>
           </StackPanel>
 
         </Grid>
