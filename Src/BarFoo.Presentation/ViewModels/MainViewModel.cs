@@ -72,7 +72,12 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private async Task DoManualSync()
     {
+        WeakReferenceMessenger.Default.Send(new IsUpdatingMessage(true));
+        _logger.LogInformation("Starting manual sync and reloading of objectives.");
         await _store.SyncObjectivesForAllApiKeysAsync();
+        await ObjectivesVM.LoadObjectivesAsync();
+        WeakReferenceMessenger.Default.Send(new IsUpdatingMessage(false));
+        _logger.LogInformation("Manual sync complete.");
     }
 
     private async void HandleApiKeyStateChanged(object recipient, ApiKeyStateChangedMessage message)

@@ -26,9 +26,13 @@ public class ApiKeyUpdateService : BackgroundService
 
         while (!cancellationToken.IsCancellationRequested)
         {
+            WeakReferenceMessenger.Default.Send(new IsUpdatingMessage(true));
+
             _logger.LogInformation("ApiKey Update Service is running update operation.");
 
             await UpdateAllApiKeysAsync(cancellationToken);
+
+            WeakReferenceMessenger.Default.Send(new IsUpdatingMessage(false));
 
             _logger.LogInformation("ApiKey Update Service is waiting for next interval.");
             await Task.Delay(_updateInterval, cancellationToken);
