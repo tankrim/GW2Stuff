@@ -5,7 +5,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 
+using BarFoo.Core.Configuration;
 using BarFoo.Core.Services;
+using BarFoo.Data;
 using BarFoo.Data.Contexts;
 using BarFoo.Data.Repositories;
 using BarFoo.Infrastructure.ApiClients;
@@ -28,8 +30,8 @@ namespace BarFoo.Presentation;
 public partial class App : Application
 {
 
-    private const string AppName = Core.Configuration.AppConfiguration.AppName;
-    private const string DbName = Core.Configuration.AppConfiguration.DbName;
+    private const string AppName = DesignTimeDbContextFactory.AppName;
+    private const string DbName = DesignTimeDbContextFactory.DbName;
 
     private IHost? _host;
 
@@ -76,7 +78,7 @@ public partial class App : Application
 
     private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
-        services.Configure<AppSettings>(context.Configuration.GetSection("AppSettings"));
+        services.AddSingleton<IConfigurationService, ConfigurationService>();
         ConfigureDatabase(context, services);
         services.AddAutoMapper(typeof(MappingProfile));
         ConfigureHttpClients(services);
@@ -172,7 +174,7 @@ public partial class App : Application
         services.AddDbContextFactory<BarFooDbContext>(options =>
         {
             var appDataPath = AppDataPathProvider.GetAppDataPath(AppName);
-            var dbPath = Path.Combine(appDataPath, "barfoo.db");
+            var dbPath = Path.Combine(appDataPath, DbName);
             var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
 
             if (connectionString != null)

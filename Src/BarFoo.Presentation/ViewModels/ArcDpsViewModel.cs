@@ -1,16 +1,13 @@
-﻿using System.Reflection;
-using System.Text.Json;
-
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
+
+using BarFoo.Core.Configuration;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace BarFoo.Presentation.ViewModels;
 
@@ -19,16 +16,23 @@ public partial class ArcDpsViewModel : ViewModelBase
     private readonly ILogger<ArcDpsViewModel> _logger;
     private readonly string _downloadUrl = "https://www.deltaconnected.com/arcdps/x64/d3d11.dll";
     private readonly HttpClient _httpClient = new();
-    private readonly IAppSettings _appSettings;
+    private readonly IConfigurationService _configService;
 
     [ObservableProperty] private string? _selectedDirectoryPath;
     [ObservableProperty] private bool _isDownloadEnabled;
 
-    public ArcDpsViewModel(ILogger<ArcDpsViewModel> logger, IAppSettings appSettings)
+    public ArcDpsViewModel(ILogger<ArcDpsViewModel> logger, IConfigurationService configService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-        SelectedDirectoryPath = _appSettings.SelectedDirectoryPath;
+        _configService = configService ?? throw new ArgumentNullException(nameof(configService));
+        IsDownloadEnabled = !string.IsNullOrWhiteSpace(SelectedDirectoryPath);
+
+        InitializeSelectedDirectoryPath();
+    }
+
+    private void InitializeSelectedDirectoryPath()
+    {
+        SelectedDirectoryPath = _configService.GetSelectedDirectoryPath();
         IsDownloadEnabled = !string.IsNullOrWhiteSpace(SelectedDirectoryPath);
     }
 
@@ -44,8 +48,7 @@ public partial class ArcDpsViewModel : ViewModelBase
             IsDownloadEnabled = true;
             _logger.LogInformation("Directory selected: {Directory}", SelectedDirectoryPath);
 
-            _appSettings.SelectedDirectoryPath = SelectedDirectoryPath;
-            await SaveConfigurationAsync();
+            await _configService.SaveSelectedDirectoryPath(SelectedDirectoryPath);
         }
         catch (Exception ex)
         {
@@ -124,61 +127,5 @@ public partial class ArcDpsViewModel : ViewModelBase
         });
 
         return folders?.Count >= 1 ? folders[0] : null;
-    }
-
-    private async Task SaveConfigurationAsync()
-    {
-        try
-        {
-            var configFile = Path.Combine(GetBasePath(), "appsettings.json");
-
-            // Read the existing JSON
-            string json = await File.ReadAllTextAsync(configFile);
-            var jsonDocument = JsonDocument.Parse(json);
-            var root = jsonDocument.RootElement.Clone();
-
-            // Create a mutable JSON representation
-            var mutableConfig = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
-
-            // Update the SelectedDirectoryPath in AppSettings
-            if (mutableConfig.TryGetValue("AppSettings", out var appSettingsElement))
-            {
-                var appSettings = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(appSettingsElement.GetRawText());
-                appSettings["SelectedDirectoryPath"] = JsonSerializer.SerializeToElement(SelectedDirectoryPath);
-                mutableConfig["AppSettings"] = JsonSerializer.SerializeToElement(appSettings);
-            }
-            else
-            {
-                mutableConfig["AppSettings"] = JsonSerializer.SerializeToElement(new { SelectedDirectoryPath });
-            }
-
-            // Serialize the updated settings back to JSON
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string updatedJson = JsonSerializer.Serialize(mutableConfig, options);
-
-            // Write the updated JSON back to the file
-            await File.WriteAllTextAsync(configFile, updatedJson);
-
-            _logger.LogInformation("Configuration saved successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error saving configuration");
-        }
-    }
-
-    private static string GetBasePath()
-    {
-        // Try to get the location of the executing assembly
-        string assemblyLocation = Assembly.GetExecutingAssembly().Location;
-        string basePath = Path.GetDirectoryName(assemblyLocation)!;
-
-        // If that fails (e.g., in design mode), fall back to the current directory
-        if (string.IsNullOrEmpty(basePath))
-        {
-            basePath = AppDomain.CurrentDomain.BaseDirectory;
-        }
-
-        return basePath;
     }
 }

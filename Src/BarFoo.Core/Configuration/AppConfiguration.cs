@@ -1,6 +1,6 @@
 ﻿namespace BarFoo.Core.Configuration;
-public class AppConfiguration
+public class XAppConfiguration
 {
-    public const string AppName = Data.DesignTimeDbContextFactory.AppName;
-    public const string DbName = Data.DesignTimeDbContextFactory.DbName;
+    public const string XAppName = Data.DesignTimeDbContextFactory.AppName;
+    public const string XDbName = Data.DesignTimeDbContextFactory.DbName;
 }
