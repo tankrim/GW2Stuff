@@ -78,8 +78,8 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
 
     private void SendFilterChangedMessage()
     {
-        _logger.LogDebug("FilterViewModel will send FilterChangedMessage. State: daily={fd}, weekly={fw}, special={fs}, pve={fpve}, pvp={fpvp}, wvw={fwvw}, completed={fc}, apiKeys={ak}",
-            FilterDaily, FilterWeekly, FilterSpecial, FilterPvE, FilterPvP, FilterWvW, FilterCompleted,
+        _logger.LogDebug("FilterViewModel will send FilterChangedMessage. State: daily={fd}, weekly={fw}, special={fs}, notComplete={fnc}, completed={fc}, pve={fpve}, pvp={fpvp}, wvw={fwvw},  apiKeys={ak}",
+            FilterDaily, FilterWeekly, FilterSpecial, FilterNotCompleted, FilterCompleted, FilterPvE, FilterPvP, FilterWvW,
             string.Join(", ", ApiKeyFilters.Where(f => f.IsSelected).Select(f => f.ApiKeyName)));
         WeakReferenceMessenger.Default.Send(new FilterChangedMessage(this));
     }

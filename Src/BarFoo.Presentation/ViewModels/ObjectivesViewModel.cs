@@ -75,18 +75,18 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
         try
         {
             var filtered = Objectives.Where(o =>
-                (_currentFilter.FilterDaily && o.ApiEndpoint == "daily" ||
-                 _currentFilter.FilterWeekly && o.ApiEndpoint == "weekly" ||
-                 _currentFilter.FilterSpecial && o.ApiEndpoint == "special" ||
-                 (!_currentFilter.FilterDaily && !_currentFilter.FilterWeekly && !_currentFilter.FilterSpecial)) &&
-                (_currentFilter.FilterPvE && o.Track == "PvE" ||
-                 _currentFilter.FilterPvP && o.Track == "PvP" ||
-                 _currentFilter.FilterWvW && o.Track == "WvW" ||
-                 (!_currentFilter.FilterPvE && !_currentFilter.FilterPvP && !_currentFilter.FilterWvW)) &&
-                (!_currentFilter.FilterCompleted || !o.Claimed) &&
-                (!_currentFilter.FilterNotCompleted || !o.Claimed) &&
-                _currentFilter.ApiKeyFilters.Any(af => af.IsSelected && af.ApiKeyName == o.ApiKeyName)
-            ).ToList();
+                            (_currentFilter.FilterDaily && o.ApiEndpoint == "daily" ||
+                              _currentFilter.FilterWeekly && o.ApiEndpoint == "weekly" ||
+                              _currentFilter.FilterSpecial && o.ApiEndpoint == "special" ||
+                            (!_currentFilter.FilterDaily && !_currentFilter.FilterWeekly && !_currentFilter.FilterSpecial)) &&
+                            (_currentFilter.FilterPvE && o.Track == "PvE" ||
+                              _currentFilter.FilterPvP && o.Track == "PvP" ||
+                              _currentFilter.FilterWvW && o.Track == "WvW" ||
+                            (!_currentFilter.FilterPvE && !_currentFilter.FilterPvP && !_currentFilter.FilterWvW)) &&
+                            (!_currentFilter.FilterCompleted || (o.Claimed || o.ProgressCurrent == o.ProgressComplete)) &&
+                            (!_currentFilter.FilterNotCompleted || (!o.Claimed && o.ProgressCurrent != o.ProgressComplete)) &&
+                              _currentFilter.ApiKeyFilters.Any(af => af.IsSelected && af.ApiKeyName == o.ApiKeyName)
+                           ).ToList();
 
             _logger.LogDebug("ApplyCurrentFilter before clearing. Current count: {Count}", FilteredObjectives.Count);
             FilteredObjectives.Clear();
