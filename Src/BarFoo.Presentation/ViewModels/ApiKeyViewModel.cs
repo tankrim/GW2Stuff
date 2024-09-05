@@ -1,11 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 
-using BarFoo.Core.Interfaces;
 using BarFoo.Core.DTOs;
+using BarFoo.Core.Interfaces;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 
 using Microsoft.Extensions.Logging;
@@ -14,12 +13,12 @@ namespace BarFoo.Presentation.ViewModels;
 
 public partial class ApiKeyViewModel : ViewModelBase
 {
-    private readonly IStore _store;
     private readonly ILogger<ApiKeyViewModel> _logger;
     private readonly IMessagingService _messagingService;
+    private readonly IStore _store;
 
     [ObservableProperty]
-    private ObservableCollection<ApiKeyDto> _apiKeys = new ObservableCollection<ApiKeyDto>();
+    private ObservableCollection<ApiKeyDto> _apiKeys = new();
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddApiKeyCommand))]
@@ -37,16 +36,16 @@ public partial class ApiKeyViewModel : ViewModelBase
     private bool _isPaneOpen = false;
 
     public ApiKeyViewModel(
-        IStore store,
         ILogger<ApiKeyViewModel> logger,
-        IMessagingService messagingService)
+        IMessagingService messagingService,
+        IStore store)
     {
-        _store = store ?? throw new ArgumentNullException(nameof(store));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
+        _store = store ?? throw new ArgumentNullException(nameof(store));
     }
 
-    public async Task<Result<IEnumerable<ApiKeyDto>>> LoadApiKeysAsync()
+    public virtual async Task LoadApiKeysAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -59,107 +58,69 @@ public partial class ApiKeyViewModel : ViewModelBase
             _logger.LogInformation("Loaded {Count} API keys", ApiKeys.Count);
             _messagingService.Send(new LoadedApiKeysMessage(ApiKeys));
             NotifyApiKeyStateChanged();
-            return Result<IEnumerable<ApiKeyDto>>.Success(ApiKeys);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading API keys");
-            return Result<IEnumerable<ApiKeyDto>>.Failure($"Failed to load API keys: {ex.Message}");
+            throw;
         }
     }
 
     [RelayCommand(CanExecute = nameof(CanAddApiKey))]
-    private async Task<Result<ApiKeyDto>> AddApiKeyAsync()
+    private async Task AddApiKeyAsync(CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Token))
+        if (!CanAddApiKey())
         {
-            _logger.LogWarning("Attempted to add an API key with invalid name or token");
-            return Result<ApiKeyDto>.Failure("Attempted to add an API key with invalid name or token");
+            return;
         }
 
         try
         {
-            var apiKey = await _store.CreateApiKeyAsync(Name, Token);
+            var apiKey = await _store.CreateApiKeyAsync(Name!, Token!);
             ApiKeys.Add(apiKey);
             Name = string.Empty;
             Token = string.Empty;
             _messagingService.Send(new ApiKeyAddedMessage(apiKey));
             NotifyApiKeyStateChanged();
-            return Result<ApiKeyDto>.Success(apiKey);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to add API key");
-            return Result<ApiKeyDto>.Failure($"Failed to add API key: {ex.Message}");
+            throw;
         }
     }
 
     private bool CanAddApiKey() => !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Token);
 
     [RelayCommand(CanExecute = nameof(CanRemoveSelectedApiKey))]
-    private async Task<Result<bool>> RemoveSelectedApiKeyAsync()
+    private async Task RemoveSelectedApiKeyAsync(CancellationToken cancellationToken)
     {
-        if (SelectedApiKey == null)
+        if (!CanRemoveSelectedApiKey())
         {
-            _logger.LogWarning("Attempted to remove an API key when no API key was selected");
-            return Result<bool>.Failure("Attempted to remove an API key when no API key was selected");
+            return;
         }
 
         try
         {
-            var keyName = SelectedApiKey.Name;
-            await _store.DeleteApiKeyAsync(SelectedApiKey.Name);
+            var keyName = SelectedApiKey!.Name;
+            await _store.DeleteApiKeyAsync(keyName);
             ApiKeys.Remove(SelectedApiKey);
             _messagingService.Send(new ApiKeyDeletedMessage(keyName));
             NotifyApiKeyStateChanged();
-            return Result<bool>.Success(true);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to remove API key: {ApiKey}", SelectedApiKey.Name);
-            return Result<bool>.Failure($"Failed to remove API key: {ex.Message}");
+            _logger.LogError(ex, "Failed to remove API key: {ApiKey}", SelectedApiKey!.Name);
+            throw;
         }
-    }
-
-    private void NotifyApiKeyStateChanged()
-    {
-        _messagingService.Send(new ApiKeyStateChangedMessage());
     }
 
     private bool CanRemoveSelectedApiKey() => SelectedApiKey is not null;
 
-    private async Task<Result<bool>> RemoveApiKeyAsync(ApiKeyDto apiKeyDto)
+    protected virtual void NotifyApiKeyStateChanged()
     {
-        try
-        {
-            ApiKeys.Remove(apiKeyDto);
-            await _store.DeleteApiKeyAsync(apiKeyDto.Name);
-            _logger.LogInformation("Removed apiKey {ApiKey}", apiKeyDto);
-            return Result<bool>.Success(true);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error removing apiKey {ApiKey}", apiKeyDto);
-            return Result<bool>.Failure($"Failed to remove API key: {ex.Message}");
-        }
+        _messagingService.Send(new ApiKeyStateChangedMessage());
     }
-}
-
-public class Result<T>
-{
-    public bool IsSuccess { get; }
-    public T? Value { get; }
-    public string? ErrorMessage { get; }
-
-    private Result(bool isSuccess, T? value, string? errorMessage)
-    {
-        IsSuccess = isSuccess;
-        Value = value;
-        ErrorMessage = errorMessage;
-    }
-
-    public static Result<T> Success(T value) => new Result<T>(true, value, null);
-    public static Result<T> Failure(string errorMessage) => new Result<T>(false, default, errorMessage);
 }
 
 public sealed class ApiKeyDeletedMessage : ValueChangedMessage<string>
