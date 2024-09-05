@@ -69,7 +69,7 @@ public partial class ArcDpsViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(IsDownloadEnabled))]
-    private async Task DownloadAndSaveFile()
+    public async Task DownloadAndSaveFile()
     {
         if (string.IsNullOrWhiteSpace(SelectedDirectoryPath))
         {
