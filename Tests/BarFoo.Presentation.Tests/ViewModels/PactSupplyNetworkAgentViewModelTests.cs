@@ -1,4 +1,4 @@
-﻿using BarFoo.Core.Services;
+﻿using BarFoo.Core.Interfaces;
 using BarFoo.Presentation.Services;
 using BarFoo.Presentation.ViewModels;
 
