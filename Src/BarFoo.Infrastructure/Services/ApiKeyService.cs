@@ -42,38 +42,38 @@ public class ApiKeyService : IApiKeyService
 
         if (await _apiKeyRepository.ExistsByNameAsync(name))
         {
-            throw new DuplicateApiKeyException($"An apikey with the name '{name}' already exists.");
+            throw new DuplicateApiKeyException($"An api key with the name '{name}' already exists.");
         }
 
-        var apikey = ApiKey.CreateApiKey(name, token);
+        var apiKey = ApiKey.CreateApiKey(name, token);
 
         try
         {
-            await _apiKeyRepository.AddAsync(apikey);
+            await _apiKeyRepository.AddAsync(apiKey);
 
-            return _mapper.Map<ApiKeyDto>(apikey);
+            return _mapper.Map<ApiKeyDto>(apiKey);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create apikey: {Name}", name);
-            throw new ServiceException("Failed to create apikey", ex);
+            _logger.LogError(ex, "Failed to create api key: {Name}", name);
+            throw new ServiceException("Failed to create api key", ex);
         }
     }
 
-    public async Task DeleteApiKeyAsync(string apikeyName)
+    public async Task DeleteApiKeyAsync(string apiKeyName)
     {
         try
         {
-            await _apiKeyRepository.DeleteAsync(apikeyName);
+            await _apiKeyRepository.DeleteAsync(apiKeyName);
         }
         catch (RepositoryException ex)
         {
-            _logger.LogError(ex, "Failed to delete apikey: {Name}", apikeyName);
-            throw new ServiceException("Failed to delete apikey", ex);
+            _logger.LogError(ex, "Failed to delete api key: {Name}", apiKeyName);
+            throw new ServiceException("Failed to delete api key", ex);
         }
     }
 
-    public async Task<ApiKeyDto?> GetApiKeyAsync(string apikeyName)
+    public async Task<ApiKeyDto?> GetApiKeyAsync(string apiKeyName)
     {
         try
         {
@@ -81,14 +81,14 @@ public class ApiKeyService : IApiKeyService
             var apikey = await context.ApiKeys
                 .Include(a => a.ApiKeyObjectives)
                 .ThenInclude(ao => ao.Objective)
-                .FirstOrDefaultAsync(a => a.Name == apikeyName);
+                .FirstOrDefaultAsync(a => a.Name == apiKeyName);
 
             return apikey != null ? _mapper.Map<ApiKeyDto>(apikey) : null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to get apikey: {Name}", apikeyName);
-            throw new ServiceException("Failed to get apikey", ex);
+            _logger.LogError(ex, "Failed to get api key: {Name}", apiKeyName);
+            throw new ServiceException("Failed to get api key", ex);
         }
     }
 
@@ -101,35 +101,35 @@ public class ApiKeyService : IApiKeyService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to get all apikeys");
-            throw new ServiceException("Failed to get all apikeys", ex);
+            _logger.LogError(ex, "Failed to get all api keys");
+            throw new ServiceException("Failed to get all api keys", ex);
         }
     }
 
-    public async Task UpdateApiKeyAsync(ApiKeyDto apikeyDto)
+    public async Task UpdateApiKeyAsync(ApiKeyDto apiKeyDto)
     {
         try
         {
             using var context = await _contextFactory.CreateDbContextAsync();
             using var transaction = await context.Database.BeginTransactionAsync();
 
-            var apikey = await GetApiKeyWithObjectives(context, apikeyDto.Name);
+            var apiKey = await GetApiKeyWithObjectives(context, apiKeyDto.Name);
 
-            UpdateApiKeyProperties(apikey, apikeyDto);
-            await UpdateObjectives(context, apikey, apikeyDto.Objectives);
+            UpdateApiKeyProperties(apiKey, apiKeyDto);
+            await UpdateObjectives(context, apiKey, apiKeyDto.Objectives);
 
             await context.SaveChangesAsync();
             await transaction.CommitAsync();
         }
         catch (NotFoundException ex)
         {
-            _logger.LogError(ex, "ApiKey not found: {Name}", apikeyDto.Name);
+            _logger.LogError(ex, "ApiKey not found: {Name}", apiKeyDto.Name);
             throw;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to update apikey: {Name}", apikeyDto.Name);
-            throw new ServiceException("Failed to update apikey", ex);
+            _logger.LogError(ex, "Failed to update api key: {Name}", apiKeyDto.Name);
+            throw new ServiceException("Failed to update api key", ex);
         }
     }
 
@@ -148,21 +148,21 @@ public class ApiKeyService : IApiKeyService
         return apikey;
     }
 
-    private void UpdateApiKeyProperties(ApiKey apikey, ApiKeyDto apikeyDto)
+    private void UpdateApiKeyProperties(ApiKey apiKey, ApiKeyDto apiKeyDto)
     {
-        apikey.HasBeenSyncedOnce = apikeyDto.HasBeenSyncedOnce;
-        apikey.LastSyncTime = apikeyDto.LastSyncTime;
+        apiKey.HasBeenSyncedOnce = apiKeyDto.HasBeenSyncedOnce;
+        apiKey.LastSyncTime = apiKeyDto.LastSyncTime;
     }
 
-    private async Task UpdateObjectives(BarFooDbContext context, ApiKey apikey, IEnumerable<ObjectiveDto> newObjectives)
+    private async Task UpdateObjectives(BarFooDbContext context, ApiKey apiKey, IEnumerable<ObjectiveDto> newObjectives)
     {
-        var existingObjectives = apikey.ApiKeyObjectives.ToDictionary(ao => ao.ObjectiveId, ao => ao);
+        var existingObjectives = apiKey.ApiKeyObjectives.ToDictionary(ao => ao.ObjectiveId, ao => ao);
         var newObjectivesDict = newObjectives.ToDictionary(o => o.Id, o => o);
 
-        // Remove objectives no longer associated with the apikey
+        // Remove objectives no longer associated with the apiKey
         foreach (var objectiveToRemove in existingObjectives.Values.Where(ao => !newObjectivesDict.ContainsKey(ao.ObjectiveId)))
         {
-            apikey.ApiKeyObjectives.Remove(objectiveToRemove);
+            apiKey.ApiKeyObjectives.Remove(objectiveToRemove);
         }
 
         // Update or add objectives
@@ -177,9 +177,9 @@ public class ApiKeyService : IApiKeyService
             {
                 // Add new objective
                 var objective = await GetOrCreateObjective(context, newObjective);
-                apikey.ApiKeyObjectives.Add(new ApiKeyObjective
+                apiKey.ApiKeyObjectives.Add(new ApiKeyObjective
                 {
-                    ApiKey = apikey,
+                    ApiKey = apiKey,
                     Objective = objective
                 });
             }
