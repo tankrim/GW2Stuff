@@ -213,6 +213,7 @@ public partial class App : Application
         services.AddHttpClient();
         services.AddTransient<IHttpClientWrapper, HttpClientWrapper>();
         services.AddTransient<IFileDownloadService, FileDownloadService>();
+        services.AddTransient<IMessagingService, WeakReferenceMessagingService>();
 
         // Register background services
         services.AddHostedService<ApiKeyUpdateService>();

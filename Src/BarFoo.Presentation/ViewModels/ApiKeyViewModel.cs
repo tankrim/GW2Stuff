@@ -16,6 +16,7 @@ public partial class ApiKeyViewModel : ViewModelBase
 {
     private readonly IStore _store;
     private readonly ILogger<ApiKeyViewModel> _logger;
+    private readonly IMessagingService _messagingService;
 
     [ObservableProperty]
     private ObservableCollection<ApiKeyDto> _apiKeys = new ObservableCollection<ApiKeyDto>();
@@ -37,10 +38,12 @@ public partial class ApiKeyViewModel : ViewModelBase
 
     public ApiKeyViewModel(
         IStore store,
-        ILogger<ApiKeyViewModel> logger)
+        ILogger<ApiKeyViewModel> logger,
+        IMessagingService messagingService)
     {
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
     }
 
     public async Task LoadApiKeysAsync()
@@ -54,7 +57,7 @@ public partial class ApiKeyViewModel : ViewModelBase
                 ApiKeys.Add(apiKey);
             }
             _logger.LogInformation("Loaded {Count} API keys", ApiKeys.Count);
-            WeakReferenceMessenger.Default.Send(new LoadedApiKeysMessage(ApiKeys));
+            _messagingService.Send(new LoadedApiKeysMessage(ApiKeys));
             NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
@@ -78,7 +81,7 @@ public partial class ApiKeyViewModel : ViewModelBase
             ApiKeys.Add(apiKey);
             Name = string.Empty;
             Token = string.Empty;
-            WeakReferenceMessenger.Default.Send(new ApiKeyAddedMessage(apiKey));
+            _messagingService.Send(new ApiKeyAddedMessage(apiKey));
             NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
@@ -103,7 +106,7 @@ public partial class ApiKeyViewModel : ViewModelBase
             var keyName = SelectedApiKey.Name;
             await _store.DeleteApiKeyAsync(SelectedApiKey.Name);
             ApiKeys.Remove(SelectedApiKey);
-            WeakReferenceMessenger.Default.Send(new ApiKeyDeletedMessage(keyName));
+            _messagingService.Send(new ApiKeyDeletedMessage(keyName));
             NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
@@ -114,7 +117,7 @@ public partial class ApiKeyViewModel : ViewModelBase
 
     private void NotifyApiKeyStateChanged()
     {
-        WeakReferenceMessenger.Default.Send(new ApiKeyStateChangedMessage());
+        _messagingService.Send(new ApiKeyStateChangedMessage());
     }
 
     private bool CanRemoveSelectedApiKey() => SelectedApiKey is not null;

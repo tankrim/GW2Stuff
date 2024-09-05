@@ -17,6 +17,7 @@ public class Store : IStore
     private readonly IServiceProvider _serviceProvider;
     private readonly IFetcherService _fetcherService;
     private readonly ILogger<Store> _logger;
+    private readonly IMessagingService _messagingService;
     private readonly ConcurrentDictionary<string, ApiKeyDto> _apiKeys;
 
     public bool IsInitialized { get; private set; } = false;
@@ -24,11 +25,13 @@ public class Store : IStore
     public Store(
         IServiceProvider serviceProvider,
         IFetcherService fetcherService,
-        ILogger<Store> logger)
+        ILogger<Store> logger,
+        IMessagingService messagingService)
     {
-        _serviceProvider = serviceProvider;
-        _fetcherService = fetcherService;
-        _logger = logger;
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _fetcherService = fetcherService ?? throw new ArgumentNullException(nameof(fetcherService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
         _apiKeys = new ConcurrentDictionary<string, ApiKeyDto>();
     }
 
@@ -233,7 +236,7 @@ public class Store : IStore
                 // Update the in-memory cache with the latest data from the database
                 _apiKeys[apikeyName] = latestApiKeyDto;
 
-                WeakReferenceMessenger.Default.Send(new ApiKeyUpdatedMessage(apikeyName));
+                _messagingService.Send(new ApiKeyUpdatedMessage(apikeyName));
                 return latestApiKeyDto;
             }
             else
@@ -263,12 +266,12 @@ public class Store : IStore
                 {
                     apikeyDto.UpdateObjectives(objectives);
 
-                    var apikeyService = _serviceProvider.GetRequiredService<IApiKeyService>();
-                    await apikeyService.UpdateApiKeyAsync(apikeyDto);
+                    var apiKeyService = _serviceProvider.GetRequiredService<IApiKeyService>();
+                    await apiKeyService.UpdateApiKeyAsync(apikeyDto);
 
                     _apiKeys[apikeyName] = apikeyDto;
 
-                    WeakReferenceMessenger.Default.Send(new ApiKeyUpdatedMessage(apikeyName));
+                    _messagingService.Send(new ApiKeyUpdatedMessage(apikeyName));
                 }
             }
         }

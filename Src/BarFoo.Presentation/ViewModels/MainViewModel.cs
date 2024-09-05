@@ -13,6 +13,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 {
     private readonly ILogger<MainViewModel> _logger;
     private readonly IStore _store;
+    private readonly IMessagingService _messagingService;
 
     public ApiKeyViewModel ApiKeyVM { get; }
     public ObjectivesViewModel ObjectivesVM { get; }
@@ -32,7 +33,8 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         ArcDpsViewModel arcDpsVM,
         StatusBarViewModel statusBarVM,
         IStore store,
-        ILogger<MainViewModel> logger)
+        ILogger<MainViewModel> logger,
+        IMessagingService messagingService)
     {
         ApiKeyVM = apiKeyVM ?? throw new ArgumentNullException(nameof(apiKeyVM));
         ObjectivesVM = objectivesVM ?? throw new ArgumentNullException(nameof(objectivesVM));
@@ -42,6 +44,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         StatusBarVM = statusBarVM ?? throw new ArgumentNullException(nameof(statusBarVM));
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
 
         WeakReferenceMessenger.Default.Register<ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
         WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, HandleIsUpdating);
@@ -75,11 +78,11 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private async Task DoManualSync()
     {
-        WeakReferenceMessenger.Default.Send(new IsUpdatingMessage(true));
+        _messagingService.Send(new IsUpdatingMessage(true));
         _logger.LogInformation("Starting manual sync and reloading of objectives.");
         await _store.SyncObjectivesForAllApiKeysAsync();
         await ObjectivesVM.LoadObjectivesAsync();
-        WeakReferenceMessenger.Default.Send(new IsUpdatingMessage(false));
+        _messagingService.Send(new IsUpdatingMessage(false));
         _logger.LogInformation("Manual sync complete.");
     }
 

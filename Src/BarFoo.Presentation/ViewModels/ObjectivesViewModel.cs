@@ -1,22 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 using BarFoo.Core.DTOs;
+using BarFoo.Core.Interfaces;
+using BarFoo.Presentation.Services;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 
 using Microsoft.Extensions.Logging;
-using Avalonia.Input.Platform;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Controls.Platform;
-using Avalonia.Platform.Storage;
-using Avalonia.Controls.ApplicationLifetimes;
-using static System.Net.Mime.MediaTypeNames;
-using CommunityToolkit.Mvvm.Input;
-using System.Text.RegularExpressions;
-using BarFoo.Presentation.Services;
-using BarFoo.Core.Interfaces;
 
 namespace BarFoo.Presentation.ViewModels;
 
@@ -25,6 +17,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
     private readonly IStore _store;
     private readonly IClipboardService _clipboardService;
     private readonly ILogger<ObjectivesViewModel> _logger;
+    private readonly IMessagingService _messagingService;
 
     [ObservableProperty]
     private ObservableCollection<ObjectiveWithOthersDto> _objectives = new();
@@ -38,12 +31,14 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
         FilterViewModel filterViewModel,
         IStore store,
         IClipboardService clipboardService,
-        ILogger<ObjectivesViewModel> logger)
+        ILogger<ObjectivesViewModel> logger,
+        IMessagingService messagingService)
     {
         _currentFilter = filterViewModel ?? throw new ArgumentNullException(nameof(filterViewModel));
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
 
         WeakReferenceMessenger.Default.Register<FilterChangedMessage>(this, HandleFilterChanged);
         WeakReferenceMessenger.Default.Register<ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
@@ -61,7 +56,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
             }
             _logger.LogInformation("Loaded {Count} objectives", Objectives.Count);
             ApplyCurrentFilter();
-            WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
+            _messagingService.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
         }
         catch (Exception ex)
         {
@@ -99,7 +94,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
                 _currentFilter.FilterDaily, _currentFilter.FilterWeekly, _currentFilter.FilterSpecial,
                 _currentFilter.FilterPvE, _currentFilter.FilterPvP, _currentFilter.FilterWvW, _currentFilter.FilterCompleted);
 
-            WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
+            _messagingService.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
         }
         catch (Exception ex)
         {
@@ -112,13 +107,13 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
         _logger.LogInformation("Received FilterChangedMessage. Applying filter...");
         _logger.LogDebug("Received FilterChangedMessage state: daily={fd}, weekly={fw}, special={fs}, pve={fpve}, pvp={fpvp}, wvw={fwvw}, completed={fc}", message.Value.FilterDaily, message.Value.FilterWeekly, message.Value.FilterSpecial, message.Value.FilterPvE, message.Value.FilterPvP, message.Value.FilterWvW, message.Value.FilterCompleted);
         ApplyCurrentFilter();
-        WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
+        _messagingService.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
     }
 
     private async void HandleApiKeyStateChanged(object recipient, ApiKeyStateChangedMessage message)
     {
         await LoadObjectivesAsync();
-        WeakReferenceMessenger.Default.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
+        _messagingService.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
     }
 
     [RelayCommand]
