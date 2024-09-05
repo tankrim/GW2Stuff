@@ -1,6 +1,6 @@
 ﻿using BarFoo.Domain.Entities;
 
-namespace BarFoo.Data.Repositories;
+namespace BarFoo.Core.Interfaces;
 
 public interface IApiKeyRepository
 {

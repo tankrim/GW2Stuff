@@ -1,4 +1,4 @@
-﻿using BarFoo.Infrastructure.Services;
+﻿using BarFoo.Core.Interfaces;
 
 using Microsoft.Extensions.Logging;
 

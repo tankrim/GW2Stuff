@@ -1,7 +1,8 @@
 ﻿using System.Collections.Concurrent;
 
-using BarFoo.Core.Exceptions;
-using BarFoo.Infrastructure.DTOs;
+using BarFoo.Core.Interfaces;
+using BarFoo.Core.DTOs;
+using BarFoo.Infrastructure.Exceptions;
 
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
@@ -9,14 +10,14 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace BarFoo.Core.Services;
+namespace BarFoo.Infrastructure.Services;
 
 public class Store : IStore
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IFetcherService _fetcherService;
     private readonly ILogger<Store> _logger;
-    private readonly ConcurrentDictionary<string, ApiKeyDto> _apikeys;
+    private readonly ConcurrentDictionary<string, ApiKeyDto> _apiKeys;
 
     public bool IsInitialized { get; private set; } = false;
 
@@ -28,7 +29,7 @@ public class Store : IStore
         _serviceProvider = serviceProvider;
         _fetcherService = fetcherService;
         _logger = logger;
-        _apikeys = new ConcurrentDictionary<string, ApiKeyDto>();
+        _apiKeys = new ConcurrentDictionary<string, ApiKeyDto>();
     }
 
     public async Task InitializeAsync()
@@ -42,11 +43,11 @@ public class Store : IStore
 
             foreach (var apikey in existingApiKeys)
             {
-                _apikeys[apikey.Name] = apikey;
+                _apiKeys[apikey.Name] = apikey;
             }
 
             IsInitialized = true;
-            _logger.LogInformation("Store initialized with {Count} existing apikeys", _apikeys.Count);
+            _logger.LogInformation("Store initialized with {Count} existing apikeys", _apiKeys.Count);
         }
         catch (Exception ex)
         {
@@ -62,7 +63,7 @@ public class Store : IStore
             var apikeyService = scope.ServiceProvider.GetRequiredService<IApiKeyService>();
 
             var apikeyDto = await apikeyService.CreateApiKeyAsync(apikeyName, apiKey);
-            _apikeys[apikeyDto.Name] = apikeyDto;
+            _apiKeys[apikeyDto.Name] = apikeyDto;
 
             await SyncObjectivesForApiKeyAsync(apikeyDto.Name);
 
@@ -82,7 +83,7 @@ public class Store : IStore
 
     public async Task DeleteApiKeyAsync(string apikeyName)
     {
-        if (!_apikeys.ContainsKey(apikeyName))
+        if (!_apiKeys.ContainsKey(apikeyName))
         {
             _logger.LogError("Attempted to delete an apikey which does not exist: {ApiKeyName}", apikeyName);
             throw new ApiKeyNotFoundException($"No such apikey: '{apikeyName}'.");
@@ -92,7 +93,7 @@ public class Store : IStore
         {
             var apikeyService = _serviceProvider.GetRequiredService<IApiKeyService>();
             await apikeyService.DeleteApiKeyAsync(apikeyName);
-            _apikeys.TryRemove(apikeyName, out _);
+            _apiKeys.TryRemove(apikeyName, out _);
         }
         catch (Exception ex)
         {
@@ -103,18 +104,18 @@ public class Store : IStore
 
     public Task<ApiKeyDto?> GetApiKeyAsync(string apikeyName)
     {
-        return Task.FromResult(_apikeys.TryGetValue(apikeyName, out var apikey) ? apikey : null);
+        return Task.FromResult(_apiKeys.TryGetValue(apikeyName, out var apikey) ? apikey : null);
     }
 
     public Task<IEnumerable<ApiKeyDto>> GetAllApiKeysAsync()
     {
-        return Task.FromResult(_apikeys.Values.AsEnumerable());
+        return Task.FromResult(_apiKeys.Values.AsEnumerable());
     }
 
     public async Task<IEnumerable<ObjectiveDto>> GetAllObjectivesAsync()
     {
         var allObjectives = new List<ObjectiveDto>();
-        foreach (var apikey in _apikeys.Values)
+        foreach (var apikey in _apiKeys.Values)
         {
             var apikeyObjectives = apikey.Objectives.Select(o => new ObjectiveDto
             {
@@ -139,7 +140,7 @@ public class Store : IStore
         var objectiveMap = new Dictionary<int, List<string>>();
 
         // First pass: collect all objectives and associated apikeys
-        foreach (var apikey in _apikeys.Values)
+        foreach (var apikey in _apiKeys.Values)
         {
             foreach (var objective in apikey.Objectives)
             {
@@ -154,7 +155,7 @@ public class Store : IStore
         }
 
         // Second pass: create ObjectiveWithOthersDto instances
-        foreach (var apikey in _apikeys.Values)
+        foreach (var apikey in _apiKeys.Values)
         {
             foreach (var objective in apikey.Objectives)
             {
@@ -181,7 +182,7 @@ public class Store : IStore
 
     public Task<IEnumerable<ObjectiveDto>> GetFilteredObjectivesAsync(Func<ObjectiveDto, bool> predicate)
     {
-        var filteredObjectives = _apikeys.Values
+        var filteredObjectives = _apiKeys.Values
             .SelectMany(a => a.Objectives ?? Enumerable.Empty<ObjectiveDto>())
             .Where(predicate);
         return Task.FromResult(filteredObjectives);
@@ -189,7 +190,7 @@ public class Store : IStore
 
     public Task<IEnumerable<ObjectiveDto>> GetObjectivesForApiKeyAsync(string apikeyName)
     {
-        if (!_apikeys.TryGetValue(apikeyName, out var storedApiKeyDto))
+        if (!_apiKeys.TryGetValue(apikeyName, out var storedApiKeyDto))
         {
             _logger.LogError("Attempted to get objectives for an apikey which does not exist: {ApiKeyName}", apikeyName);
             throw new ApiKeyNotFoundException($"No such apikey: '{apikeyName}'.");
@@ -200,7 +201,7 @@ public class Store : IStore
 
     public async Task<ApiKeyDto> SyncObjectivesForApiKeyAsync(string apikeyName)
     {
-        if (!_apikeys.TryGetValue(apikeyName, out var storedApiKeyDto))
+        if (!_apiKeys.TryGetValue(apikeyName, out var storedApiKeyDto))
         {
             _logger.LogError("Attempted to sync objectives for an apikey which does not exist: {ApiKeyName}", apikeyName);
             throw new ApiKeyNotFoundException($"No such apikey: '{apikeyName}'.");
@@ -230,7 +231,7 @@ public class Store : IStore
             if (latestApiKeyDto != null)
             {
                 // Update the in-memory cache with the latest data from the database
-                _apikeys[apikeyName] = latestApiKeyDto;
+                _apiKeys[apikeyName] = latestApiKeyDto;
 
                 WeakReferenceMessenger.Default.Send(new ApiKeyUpdatedMessage(apikeyName));
                 return latestApiKeyDto;
@@ -249,7 +250,7 @@ public class Store : IStore
 
     public async Task SyncObjectivesForAllApiKeysAsync()
     {
-        var apikeyNames = _apikeys.Keys.ToList();
+        var apikeyNames = _apiKeys.Keys.ToList();
         var fetcherService = _serviceProvider.GetRequiredService<IFetcherService>();
 
         try
@@ -258,14 +259,14 @@ public class Store : IStore
 
             foreach (var (apikeyName, objectives) in allObjectives)
             {
-                if (_apikeys.TryGetValue(apikeyName, out var apikeyDto))
+                if (_apiKeys.TryGetValue(apikeyName, out var apikeyDto))
                 {
                     apikeyDto.UpdateObjectives(objectives);
 
                     var apikeyService = _serviceProvider.GetRequiredService<IApiKeyService>();
                     await apikeyService.UpdateApiKeyAsync(apikeyDto);
 
-                    _apikeys[apikeyName] = apikeyDto;
+                    _apiKeys[apikeyName] = apikeyDto;
 
                     WeakReferenceMessenger.Default.Send(new ApiKeyUpdatedMessage(apikeyName));
                 }

@@ -1,4 +1,4 @@
-﻿namespace BarFoo.Infrastructure.Services;
+﻿namespace BarFoo.Core.Interfaces;
 
 public interface IHttpClientWrapper
 {

@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BarFoo.Core\BarFoo.Core.csproj" />
     <ProjectReference Include="..\BarFoo.Data\BarFoo.Data.csproj" />
     <ProjectReference Include="..\BarFoo.Domain\BarFoo.Domain.csproj" />
   </ItemGroup>

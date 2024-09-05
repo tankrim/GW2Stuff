@@ -1,4 +1,4 @@
-﻿namespace BarFoo.Core.Exceptions;
+﻿namespace BarFoo.Infrastructure.Exceptions;
 
 [Serializable]
 internal class ServiceException : Exception

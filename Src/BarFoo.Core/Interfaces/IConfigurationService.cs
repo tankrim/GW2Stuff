@@ -1,4 +1,4 @@
-﻿namespace BarFoo.Core.Configuration
+﻿namespace BarFoo.Core.Interfaces
 {
     public interface IConfigurationService
     {

@@ -1,5 +1,4 @@
-﻿
-namespace BarFoo.Core.Services
+﻿namespace BarFoo.Core.Interfaces
 {
     public interface IPactSupplyNetworkAgentService
     {

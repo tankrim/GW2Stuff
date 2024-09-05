@@ -1,10 +1,10 @@
-﻿using BarFoo.Infrastructure.ApiClients;
-using BarFoo.Infrastructure.DTOs;
+﻿using BarFoo.Core.DTOs;
+using BarFoo.Core.Interfaces;
 using BarFoo.Infrastructure.Exceptions;
 
 using Microsoft.Extensions.Logging;
 
-namespace BarFoo.Core.Services;
+namespace BarFoo.Infrastructure.Services;
 
 public class FetcherService : IFetcherService
 {

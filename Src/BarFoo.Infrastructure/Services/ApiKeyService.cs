@@ -1,19 +1,17 @@
 ﻿using AutoMapper;
 
-using BarFoo.Core.Exceptions;
+using BarFoo.Core.DTOs;
+using BarFoo.Core.Interfaces;
 using BarFoo.Data.Contexts;
 using BarFoo.Data.Exceptions;
-using BarFoo.Data.Repositories;
 using BarFoo.Domain.Entities;
-using BarFoo.Infrastructure.DTOs;
-
-using CommunityToolkit.Mvvm.Messaging;
+using BarFoo.Infrastructure.Exceptions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace BarFoo.Core.Services;
+namespace BarFoo.Infrastructure.Services;
 
 public class ApiKeyService : IApiKeyService
 {
@@ -26,15 +24,15 @@ public class ApiKeyService : IApiKeyService
     public ApiKeyService(
         IMapper mapper,
         IServiceProvider serviceProvider,
-        IApiKeyRepository apikeyRepository,
+        IApiKeyRepository apiKeyRepository,
         IDbContextFactory<BarFooDbContext> contextFactory,
         ILogger<ApiKeyService> logger)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _apiKeyRepository = apikeyRepository ?? throw new ArgumentNullException(nameof(apikeyRepository));
+        _apiKeyRepository = apiKeyRepository ?? throw new ArgumentNullException(nameof(apiKeyRepository));
         _contextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ApiKeyDto> CreateApiKeyAsync(string name, string token)

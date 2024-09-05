@@ -1,4 +1,5 @@
-﻿using BarFoo.Core.Services;
+﻿using BarFoo.Core.Interfaces;
+using BarFoo.Infrastructure.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;

@@ -1,6 +1,6 @@
-﻿using BarFoo.Infrastructure.DTOs;
+﻿using BarFoo.Core.DTOs;
 
-namespace BarFoo.Core.Services;
+namespace BarFoo.Core.Interfaces;
 
 public interface IStore
 {

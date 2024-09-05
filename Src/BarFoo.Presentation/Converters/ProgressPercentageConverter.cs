@@ -2,7 +2,7 @@
 
 using Avalonia.Data.Converters;
 
-using BarFoo.Infrastructure.DTOs;
+using BarFoo.Core.DTOs;
 
 namespace BarFoo.Presentation.Converters
 {

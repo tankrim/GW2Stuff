@@ -2,8 +2,8 @@
 
 using Avalonia.Threading;
 
-using BarFoo.Core.Services;
-using BarFoo.Infrastructure.DTOs;
+using BarFoo.Core.DTOs;
+using BarFoo.Infrastructure.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;

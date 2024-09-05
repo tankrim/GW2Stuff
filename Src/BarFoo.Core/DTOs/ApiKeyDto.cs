@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BarFoo.Infrastructure.DTOs;
+namespace BarFoo.Core.DTOs;
 
 public class ApiKeyDto : INotifyPropertyChanged
 {

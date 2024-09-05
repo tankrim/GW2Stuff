@@ -47,7 +47,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BarFoo.Core\BarFoo.Core.csproj" />
-    <ProjectReference Include="..\BarFoo.Data\BarFoo.Data.csproj" />
+    <ProjectReference Include="..\BarFoo.Domain\BarFoo.Domain.csproj" />
+    <ProjectReference Include="..\BarFoo.Infrastructure\BarFoo.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

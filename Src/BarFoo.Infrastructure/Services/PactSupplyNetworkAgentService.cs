@@ -1,9 +1,11 @@
 ﻿using System.Net.Http;
 using System.Text.RegularExpressions;
 
+using BarFoo.Core.Interfaces;
+
 using Microsoft.Extensions.Logging;
 
-namespace BarFoo.Core.Services;
+namespace BarFoo.Infrastructure.Services;
 
 public class PactSupplyNetworkAgentService : IPactSupplyNetworkAgentService
 {

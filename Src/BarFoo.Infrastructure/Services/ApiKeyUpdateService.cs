@@ -1,10 +1,12 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using BarFoo.Core.Interfaces;
+
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace BarFoo.Core.Services;
+namespace BarFoo.Infrastructure.Services;
 
 public class ApiKeyUpdateService : BackgroundService
 {

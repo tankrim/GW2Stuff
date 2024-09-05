@@ -6,12 +6,11 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 
 using BarFoo.Core.Configuration;
-using BarFoo.Core.Services;
-using BarFoo.Data;
+using BarFoo.Core.Interfaces;
 using BarFoo.Data.Contexts;
 using BarFoo.Data.Repositories;
+using BarFoo.Domain.Mappings;
 using BarFoo.Infrastructure.ApiClients;
-using BarFoo.Infrastructure.Mappings;
 using BarFoo.Infrastructure.Services;
 using BarFoo.Presentation.Services;
 using BarFoo.Presentation.ViewModels;
@@ -31,8 +30,8 @@ namespace BarFoo.Presentation;
 public partial class App : Application
 {
 
-    private const string AppName = DesignTimeDbContextFactory.AppName;
-    private const string DbName = DesignTimeDbContextFactory.DbName;
+    private const string AppName = "BarFoo";
+    private const string DbName = "barfoo.db";
 
     private IHost? _host;
 

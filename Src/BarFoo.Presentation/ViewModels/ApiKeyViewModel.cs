@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 
-using BarFoo.Core.Services;
-using BarFoo.Infrastructure.DTOs;
+using BarFoo.Core.Interfaces;
+using BarFoo.Core.DTOs;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;

@@ -1,4 +1,5 @@
-﻿using BarFoo.Data.Contexts;
+﻿using BarFoo.Core.Interfaces;
+using BarFoo.Data.Contexts;
 using BarFoo.Data.Exceptions;
 using BarFoo.Domain.Entities;
 

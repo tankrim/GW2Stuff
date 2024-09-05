@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 
-using BarFoo.Data;
+using BarFoo.Core.Interfaces;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,11 +20,6 @@ public class ConfigurationService : IConfigurationService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configFilePath = Path.Combine(GetBasePath(), "appsettings.json");
     }
-
-    public string? GetSelectedDirectoryPath() => GetSection<AppSettings>("AppSettings")?.SelectedDirectoryPath;
-
-    public Task SaveSelectedDirectoryPath(string path) =>
-        SaveSection("AppSettings", new AppSettings { SelectedDirectoryPath = path });
 
     public T? GetSection<T>(string sectionName) where T : class, new()
     {
@@ -56,6 +51,11 @@ public class ConfigurationService : IConfigurationService
             throw;
         }
     }
+
+    public string? GetSelectedDirectoryPath() => GetSection<AppSettings>("AppSettings")?.SelectedDirectoryPath;
+
+    public Task SaveSelectedDirectoryPath(string path) =>
+        SaveSection("AppSettings", new AppSettings { SelectedDirectoryPath = path });
 
     private static string GetBasePath()
     {

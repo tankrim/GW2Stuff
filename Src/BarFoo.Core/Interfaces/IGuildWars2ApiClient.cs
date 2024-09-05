@@ -1,6 +1,6 @@
-﻿using BarFoo.Infrastructure.DTOs;
+﻿using BarFoo.Core.DTOs;
 
-namespace BarFoo.Infrastructure.ApiClients;
+namespace BarFoo.Core.Interfaces;
 
 public interface IGuildWars2ApiClient
 {

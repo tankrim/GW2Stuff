@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 
 using BarFoo.Domain.Entities;
-using BarFoo.Infrastructure.DTOs;
+using BarFoo.Core.DTOs;
 
-namespace BarFoo.Infrastructure.Mappings;
+namespace BarFoo.Domain.Mappings;
 
 public class MappingProfile : Profile
 {

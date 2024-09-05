@@ -1,4 +1,4 @@
-﻿namespace BarFoo.Infrastructure.DTOs;
+﻿namespace BarFoo.Core.DTOs;
 
 public class ObjectiveWithOthersDto : ObjectiveDto
 {

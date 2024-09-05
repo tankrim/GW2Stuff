@@ -3,9 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
-
-using BarFoo.Core.Services;
-using BarFoo.Infrastructure.DTOs;
+using BarFoo.Core.DTOs;
 
 using Microsoft.Extensions.Logging;
 using Avalonia.Input.Platform;
@@ -18,6 +16,7 @@ using static System.Net.Mime.MediaTypeNames;
 using CommunityToolkit.Mvvm.Input;
 using System.Text.RegularExpressions;
 using BarFoo.Presentation.Services;
+using BarFoo.Core.Interfaces;
 
 namespace BarFoo.Presentation.ViewModels;
 

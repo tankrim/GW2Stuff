@@ -2,8 +2,8 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-using BarFoo.Data.Repositories;
-using BarFoo.Infrastructure.DTOs;
+using BarFoo.Core.DTOs;
+using BarFoo.Core.Interfaces;
 using BarFoo.Infrastructure.Exceptions;
 using BarFoo.Infrastructure.Models;
 

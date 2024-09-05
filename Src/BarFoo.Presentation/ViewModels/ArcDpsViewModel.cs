@@ -1,4 +1,6 @@
-﻿using BarFoo.Core.Configuration;
+﻿using Avalonia.Threading;
+
+using BarFoo.Core.Interfaces;
 using BarFoo.Presentation.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -15,7 +17,19 @@ public partial class ArcDpsViewModel : ViewModelBase
     private readonly IFolderPickerService _folderPickerService;
     private readonly IFileDownloadService _fileDownloadService;
 
-    [ObservableProperty] private string? _selectedDirectoryPath;
+    private string? _selectedDirectoryPath;
+    public string? SelectedDirectoryPath
+    {
+        get => _selectedDirectoryPath;
+        set
+        {
+            if (SetProperty(ref _selectedDirectoryPath, value))
+            {
+                UpdateDownloadEnabledState();
+            }
+        }
+    }
+
     [ObservableProperty] private bool _isDownloadEnabled;
 
     public ArcDpsViewModel(
