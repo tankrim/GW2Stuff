@@ -10,7 +10,7 @@ namespace BarFoo.Presentation.Tests.ViewModels;
 public partial class PactSupplyNetworkAgentViewModelTests
 {
     [Fact]
-    public void CopyPSNALinksToClipboardCommand_OnExecute_GetsDataAndCopiesToClipboard()
+    public void CopyPSNALinksToClipboardCommand_OnExecute_RetrievesPSNADataAndCopiesToClipboard()
     {
         // Arrange
 
@@ -42,6 +42,15 @@ public partial class PactSupplyNetworkAgentViewModelTests
 
         mocker.Verify<IPactSupplyNetworkAgentService>(x => x.GetPSNA(), Times.Once);
         mocker.Verify<IClipboardService>(x => x.SetTextAsync(expectedData), Times.Once);
+        mocker.Verify<ILogger<PactSupplyNetworkAgentViewModel>>(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Retrieved PSNA information")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once)
+            ;
     }
 
     [Fact]
