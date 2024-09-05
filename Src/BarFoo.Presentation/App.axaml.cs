@@ -12,6 +12,7 @@ using BarFoo.Data.Contexts;
 using BarFoo.Data.Repositories;
 using BarFoo.Infrastructure.ApiClients;
 using BarFoo.Infrastructure.Mappings;
+using BarFoo.Infrastructure.Services;
 using BarFoo.Presentation.Services;
 using BarFoo.Presentation.ViewModels;
 using BarFoo.Presentation.Views;
@@ -209,6 +210,10 @@ public partial class App : Application
         services.AddSingleton<IStore, Store>();
         services.AddTransient<IClipboardService, ClipboardService>();
         services.AddTransient<IPactSupplyNetworkAgentService, PactSupplyNetworkAgentService>();
+        services.AddTransient<IFolderPickerService, FolderPickerService>();
+        services.AddHttpClient();
+        services.AddTransient<IHttpClientWrapper, HttpClientWrapper>();
+        services.AddTransient<IFileDownloadService, FileDownloadService>();
 
         // Register background services
         services.AddHostedService<ApiKeyUpdateService>();

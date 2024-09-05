@@ -29,9 +29,18 @@ public partial class PactSupplyNetworkAgentViewModel : ViewModelBase
     [RelayCommand]
     public async Task CopyPSNALinksToClipboard()
     {
-        _psnaLinks = await _pactSupplyNetworkAgentService.GetPSNA();
-        _logger.LogInformation("Retrieved PSNA information.");
-        await _clipboardService.SetTextAsync(_psnaLinks);
-        _logger.LogInformation("Put PSNA information on the clipboard.");
+        try
+        {
+            _psnaLinks = await _pactSupplyNetworkAgentService.GetPSNA();
+            _logger.LogInformation("Retrieved PSNA information.");
+
+            await _clipboardService.SetTextAsync(_psnaLinks);
+            _logger.LogInformation("Put PSNA information on the clipboard.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while copying PSNA links to clipboard.");
+            throw;
+        }
     }
 }
