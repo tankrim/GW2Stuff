@@ -6,6 +6,7 @@ using BarFoo.Core.Interfaces;
 using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.Extensions.Logging;
 
@@ -31,10 +32,14 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
     [ObservableProperty]
     private bool _isLoading;
 
+    public IRelayCommand SendFilterChangedCommand { get; }
+
     public FilterViewModel(ILogger<FilterViewModel> logger, IMessagingService messagingService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
+
+        SendFilterChangedCommand = new RelayCommand(SendFilterChangedMessage);
 
         PropertyChanged += OnPropertyChanged;
         ApiKeyFilters.CollectionChanged += OnApiKeyFiltersChanged;
@@ -48,7 +53,7 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         _logger.LogDebug("FilterViewModel property changed: {PropertyName}", e.PropertyName);
-        SendFilterChangedMessage();
+        SendFilterChangedCommand.Execute(null);
     }
 
     private void OnApiKeyFiltersChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -69,7 +74,7 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
             }
         }
 
-        SendFilterChangedMessage();
+        SendFilterChangedCommand.Execute(null);
     }
 
     private void OnApiKeyFilterPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -77,7 +82,7 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
         if (e.PropertyName == nameof(ApiKeyFilter.IsSelected))
         {
             _logger.LogDebug("ApiKeyFilter IsSelected changed");
-            SendFilterChangedMessage();
+            SendFilterChangedCommand.Execute(null);
         }
     }
 
@@ -111,7 +116,7 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
             ApiKeyFilters.Add(new ApiKeyFilter(dto.Name));
         }
         _logger.LogInformation("Added {Count} API key filters", ApiKeyFilters.Count);
-        SendFilterChangedMessage();
+        SendFilterChangedCommand.Execute(null);
     }
 
     public void HandleIsLoading(object recipient, IsLoadingMessage message)
