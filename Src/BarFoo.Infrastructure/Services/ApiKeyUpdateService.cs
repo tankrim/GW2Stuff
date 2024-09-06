@@ -1,4 +1,5 @@
 ﻿using BarFoo.Core.Interfaces;
+using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
@@ -69,21 +70,11 @@ public class ApiKeyUpdateService : BackgroundService
         {
             await _store.SyncObjectivesForAllApiKeysAsync();
             _logger.LogInformation("ApiKey Update Service completed scheduled update of all apikeys");
-            _messagingService.Send(new ApiKeysUpdatedMessage());
+            _messagingService.Send(new ApiKeyMessages.ApiKeysUpdatedMessage());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred in ApiKey Update Service");
         }
     }
-}
-
-public sealed class IsUpdatingMessage : ValueChangedMessage<bool>
-{
-    public IsUpdatingMessage(bool isUpdating) : base(isUpdating) { }
-}
-
-public sealed class ApiKeysUpdatedMessage : ValueChangedMessage<bool>
-{
-    public ApiKeysUpdatedMessage() : base(true) { }
 }

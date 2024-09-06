@@ -2,11 +2,13 @@
 
 using BarFoo.Core.DTOs;
 using BarFoo.Core.Interfaces;
+using BarFoo.Core.Messages;
 using BarFoo.Presentation.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 
 using Microsoft.Extensions.Logging;
 
@@ -41,7 +43,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
 
         WeakReferenceMessenger.Default.Register<FilterChangedMessage>(this, HandleFilterChanged);
-        WeakReferenceMessenger.Default.Register<ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
+        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
     }
 
     public async Task LoadObjectivesAsync()
@@ -56,7 +58,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
             }
             _logger.LogInformation("Loaded {Count} objectives", Objectives.Count);
             ApplyCurrentFilter();
-            _messagingService.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
+            _messagingService.Send(new ObjectiveMessages.ObjectivesChangedMessage(nameof(Objectives), Objectives));
         }
         catch (Exception ex)
         {
@@ -94,7 +96,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
                 _currentFilter.FilterDaily, _currentFilter.FilterWeekly, _currentFilter.FilterSpecial,
                 _currentFilter.FilterPvE, _currentFilter.FilterPvP, _currentFilter.FilterWvW, _currentFilter.FilterCompleted);
 
-            _messagingService.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
+            _messagingService.Send(new ObjectiveMessages.ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
         }
         catch (Exception ex)
         {
@@ -107,13 +109,13 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
         _logger.LogInformation("Received FilterChangedMessage. Applying filter...");
         _logger.LogDebug("Received FilterChangedMessage state: daily={fd}, weekly={fw}, special={fs}, pve={fpve}, pvp={fpvp}, wvw={fwvw}, completed={fc}", message.Value.FilterDaily, message.Value.FilterWeekly, message.Value.FilterSpecial, message.Value.FilterPvE, message.Value.FilterPvP, message.Value.FilterWvW, message.Value.FilterCompleted);
         ApplyCurrentFilter();
-        _messagingService.Send(new ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
+        _messagingService.Send(new ObjectiveMessages.ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
     }
 
-    private async void HandleApiKeyStateChanged(object recipient, ApiKeyStateChangedMessage message)
+    private async void HandleApiKeyStateChanged(object recipient, ApiKeyMessages.ApiKeyStateChangedMessage message)
     {
         await LoadObjectivesAsync();
-        _messagingService.Send(new ObjectivesChangedMessage(nameof(Objectives), Objectives));
+        _messagingService.Send(new ObjectiveMessages.ObjectivesChangedMessage(nameof(Objectives), Objectives));
     }
 
     [RelayCommand]
@@ -136,7 +138,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
     public void Dispose()
     {
         WeakReferenceMessenger.Default.Unregister<FilterChangedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ApiKeyStateChangedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeyStateChangedMessage>(this);
         GC.SuppressFinalize(this);
     }
 }

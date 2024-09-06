@@ -2,6 +2,7 @@
 
 using BarFoo.Core.DTOs;
 using BarFoo.Core.Interfaces;
+using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -56,7 +57,7 @@ public partial class ApiKeyViewModel : ViewModelBase
                 ApiKeys.Add(apiKey);
             }
             _logger.LogInformation("Loaded {Count} API keys", ApiKeys.Count);
-            _messagingService.Send(new LoadedApiKeysMessage(ApiKeys));
+            _messagingService.Send(new ApiKeyMessages.ApiKeysLoadedMessage(ApiKeys));
             NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
@@ -80,7 +81,7 @@ public partial class ApiKeyViewModel : ViewModelBase
             ApiKeys.Add(apiKey);
             Name = string.Empty;
             Token = string.Empty;
-            _messagingService.Send(new ApiKeyAddedMessage(apiKey));
+            _messagingService.Send(new ApiKeyMessages.ApiKeyAddedMessage(apiKey));
             NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
@@ -105,7 +106,7 @@ public partial class ApiKeyViewModel : ViewModelBase
             var keyName = SelectedApiKey!.Name;
             await _store.DeleteApiKeyAsync(keyName);
             ApiKeys.Remove(SelectedApiKey);
-            _messagingService.Send(new ApiKeyDeletedMessage(keyName));
+            _messagingService.Send(new ApiKeyMessages.ApiKeyDeletedMessage(keyName));
             NotifyApiKeyStateChanged();
         }
         catch (Exception ex)
@@ -119,24 +120,6 @@ public partial class ApiKeyViewModel : ViewModelBase
 
     protected virtual void NotifyApiKeyStateChanged()
     {
-        _messagingService.Send(new ApiKeyStateChangedMessage());
+        _messagingService.Send(new ApiKeyMessages.ApiKeyStateChangedMessage());
     }
-}
-
-public sealed class ApiKeyDeletedMessage : ValueChangedMessage<string>
-{
-    public ApiKeyDeletedMessage(string keyName)
-        : base(keyName) { }
-}
-
-public sealed class LoadedApiKeysMessage : ValueChangedMessage<IEnumerable<ApiKeyDto>>
-{
-    public LoadedApiKeysMessage(IEnumerable<ApiKeyDto> dtos)
-        : base(dtos) { }
-}
-
-public sealed class ApiKeyAddedMessage : ValueChangedMessage<ApiKeyDto>
-{
-    public ApiKeyAddedMessage(ApiKeyDto dto)
-        : base(dto) { }
 }

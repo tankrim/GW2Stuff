@@ -1,13 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using Avalonia.Threading;
 
-using Avalonia.Threading;
-
-using BarFoo.Core.DTOs;
-using BarFoo.Infrastructure.Services;
+using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 
 namespace BarFoo.Presentation.ViewModels;
 
@@ -32,11 +28,11 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
         };
         _timer.Tick += Timer_Tick;
 
-        WeakReferenceMessenger.Default.Register<ObjectivesChangedMessage>(this, HandleObjectivesChanged);
+        WeakReferenceMessenger.Default.Register<ObjectiveMessages.ObjectivesChangedMessage>(this, HandleObjectivesChanged);
         WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, HandleIsUpdating);
     }
 
-    private void HandleObjectivesChanged(object recipient, ObjectivesChangedMessage message)
+    private void HandleObjectivesChanged(object recipient, ObjectiveMessages.ObjectivesChangedMessage message)
     {
         if (message.Value.PropertyName == nameof(ObjectivesViewModel.Objectives))
         {
@@ -69,14 +65,8 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
     {
         _timer.Stop();
         _timer.Tick -= Timer_Tick;
-        WeakReferenceMessenger.Default.Unregister<ObjectivesChangedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ObjectiveMessages.ObjectivesChangedMessage>(this);
         WeakReferenceMessenger.Default.Unregister<IsUpdatingMessage>(this);
         GC.SuppressFinalize(this);
     }
-}
-
-public sealed class ObjectivesChangedMessage : ValueChangedMessage<(string PropertyName, ObservableCollection<ObjectiveWithOthersDto> Value)>
-{
-    public ObjectivesChangedMessage(string propertyName, ObservableCollection<ObjectiveWithOthersDto> value)
-        : base((propertyName, value)) { }
 }

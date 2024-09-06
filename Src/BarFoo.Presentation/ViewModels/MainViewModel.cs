@@ -1,5 +1,5 @@
 ﻿using BarFoo.Core.Interfaces;
-using BarFoo.Infrastructure.Services;
+using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -46,9 +46,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
 
-        WeakReferenceMessenger.Default.Register<ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
+        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
         WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, HandleIsUpdating);
-        WeakReferenceMessenger.Default.Register<ApiKeysUpdatedMessage>(this, HandleApiKeysUpdated);
+        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeysUpdatedMessage>(this, HandleApiKeysUpdated);
     }
 
     public async Task InitializeAsync()
@@ -61,9 +61,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
-        WeakReferenceMessenger.Default.Unregister<ApiKeyStateChangedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeyStateChangedMessage>(this);
         WeakReferenceMessenger.Default.Unregister<IsUpdatingMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ApiKeysUpdatedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeysUpdatedMessage>(this);
         ObjectivesVM.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -86,7 +86,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _logger.LogInformation("Manual sync complete.");
     }
 
-    private async void HandleApiKeyStateChanged(object recipient, ApiKeyStateChangedMessage message)
+    private async void HandleApiKeyStateChanged(object recipient, ApiKeyMessages.ApiKeyStateChangedMessage message)
     {
         await ObjectivesVM.LoadObjectivesAsync();
     }
@@ -96,13 +96,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         StatusBarVM.SetIsUpdatingTemporarily();
     }
 
-    private async void HandleApiKeysUpdated(object recipient, ApiKeysUpdatedMessage message)
+    private async void HandleApiKeysUpdated(object recipient, ApiKeyMessages.ApiKeysUpdatedMessage message)
     {
         _logger.LogInformation("Received ApiKeysUpdatedMessage. Reloading objectives.");
         await ObjectivesVM.LoadObjectivesAsync();
     }
-}
-
-public sealed class ApiKeyStateChangedMessage
-{
 }

@@ -3,16 +3,16 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 
 using BarFoo.Core.Interfaces;
+using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 
 using Microsoft.Extensions.Logging;
 
 namespace BarFoo.Presentation.ViewModels;
 
-public partial class FilterViewModel : ViewModelBase, IDisposable
+public partial class FilterViewModel : ViewModelBase, IFilter, IDisposable
 {
     private readonly ILogger<FilterViewModel> _logger;
     private readonly IMessagingService _messagingService;
@@ -40,9 +40,9 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
         PropertyChanged += OnPropertyChanged;
         ApiKeyFilters.CollectionChanged += OnApiKeyFiltersChanged;
 
-        WeakReferenceMessenger.Default.Register<ApiKeyAddedMessage>(this, HandleApiKeyAdded);
-        WeakReferenceMessenger.Default.Register<ApiKeyDeletedMessage>(this, HandleApiKeyDeleted);
-        WeakReferenceMessenger.Default.Register<LoadedApiKeysMessage>(this, HandleLoadedApiKeys);
+        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeyAddedMessage>(this, HandleApiKeyAdded);
+        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeyDeletedMessage>(this, HandleApiKeyDeleted);
+        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeysLoadedMessage>(this, HandleLoadedApiKeys);
         WeakReferenceMessenger.Default.Register<IsLoadingMessage>(this, HandleIsLoading);
     }
 
@@ -90,12 +90,12 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
         _messagingService.Send(new FilterChangedMessage(this));
     }
 
-    private void HandleApiKeyAdded(object recipient, ApiKeyAddedMessage message)
+    private void HandleApiKeyAdded(object recipient, ApiKeyMessages.ApiKeyAddedMessage message)
     {
         ApiKeyFilters.Add(new ApiKeyFilter(message.Value.Name));
     }
 
-    private void HandleApiKeyDeleted(object recipient, ApiKeyDeletedMessage message)
+    private void HandleApiKeyDeleted(object recipient, ApiKeyMessages.ApiKeyDeletedMessage message)
     {
         var filterToRemove = ApiKeyFilters.FirstOrDefault(f => f.ApiKeyName == message.Value);
         if (filterToRemove != null)
@@ -104,7 +104,7 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
         }
     }
 
-    private void HandleLoadedApiKeys(object recipient, LoadedApiKeysMessage message)
+    private void HandleLoadedApiKeys(object recipient, ApiKeyMessages.ApiKeysLoadedMessage message)
     {
         ApiKeyFilters.Clear();
         foreach (var dto in message.Value)
@@ -130,9 +130,9 @@ public partial class FilterViewModel : ViewModelBase, IDisposable
             filter.PropertyChanged -= OnApiKeyFilterPropertyChanged;
         }
 
-        WeakReferenceMessenger.Default.Unregister<ApiKeyAddedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ApiKeyDeletedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<LoadedApiKeysMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeyAddedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeyDeletedMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeysLoadedMessage>(this);
         WeakReferenceMessenger.Default.Unregister<IsLoadingMessage>(this);
         GC.SuppressFinalize(this);
     }
@@ -149,20 +149,5 @@ public partial class ApiKeyFilter : ObservableObject
     {
         ApiKeyName = apiKeyName;
         IsSelected = true;
-    }
-}
-
-public sealed class FilterChangedMessage : ValueChangedMessage<FilterViewModel>
-{
-    public FilterChangedMessage(FilterViewModel filter) : base(filter) { }
-}
-
-public sealed class IsLoadingMessage
-{
-    public bool IsLoading { get; }
-
-    public IsLoadingMessage(bool isLoading)
-    {
-        IsLoading = isLoading;
     }
 }
