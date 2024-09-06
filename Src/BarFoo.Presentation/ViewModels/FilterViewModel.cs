@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BarFoo.Presentation.ViewModels;
 
-public partial class FilterViewModel : ViewModelBase, IFilter, IDisposable
+public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel, IDisposable
 {
     private readonly ILogger<FilterViewModel> _logger;
     private readonly IMessagingService _messagingService;
@@ -41,7 +41,7 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IDisposable
 
         _messagingService.Register<ApiKeyMessages.ApiKeyAddedMessage>(this, HandleApiKeyAdded);
         _messagingService.Register<ApiKeyMessages.ApiKeyDeletedMessage>(this, HandleApiKeyDeleted);
-        _messagingService.Register<ApiKeyMessages.ApiKeysLoadedMessage>(this, HandleLoadedApiKeys);
+        _messagingService.Register<ApiKeyMessages.ApiKeysLoadedMessage>(this, HandleApiKeysLoaded);
         _messagingService.Register<IsLoadingMessage>(this, HandleIsLoading);
     }
 
@@ -89,12 +89,12 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IDisposable
         _messagingService.Send(new FilterChangedMessage(this));
     }
 
-    private void HandleApiKeyAdded(object recipient, ApiKeyMessages.ApiKeyAddedMessage message)
+    public void HandleApiKeyAdded(object recipient, ApiKeyMessages.ApiKeyAddedMessage message)
     {
         ApiKeyFilters.Add(new ApiKeyFilter(message.Value.Name));
     }
 
-    private void HandleApiKeyDeleted(object recipient, ApiKeyMessages.ApiKeyDeletedMessage message)
+    public void HandleApiKeyDeleted(object recipient, ApiKeyMessages.ApiKeyDeletedMessage message)
     {
         var filterToRemove = ApiKeyFilters.FirstOrDefault(f => f.ApiKeyName == message.Value);
         if (filterToRemove != null)
@@ -103,7 +103,7 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IDisposable
         }
     }
 
-    private void HandleLoadedApiKeys(object recipient, ApiKeyMessages.ApiKeysLoadedMessage message)
+    public void HandleApiKeysLoaded(object recipient, ApiKeyMessages.ApiKeysLoadedMessage message)
     {
         ApiKeyFilters.Clear();
         foreach (var dto in message.Value)
@@ -114,7 +114,7 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IDisposable
         SendFilterChangedMessage();
     }
 
-    private void HandleIsLoading(object recipient, IsLoadingMessage message)
+    public void HandleIsLoading(object recipient, IsLoadingMessage message)
     {
         IsLoading = message.IsLoading;
     }

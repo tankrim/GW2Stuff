@@ -214,6 +214,7 @@ public partial class App : Application
         services.AddTransient<IHttpClientWrapper, HttpClientWrapper>();
         services.AddTransient<IFileDownloadService, FileDownloadService>();
         services.AddTransient<IMessagingService, WeakReferenceMessagingService>();
+        services.AddTransient<IFilterViewModel, FilterViewModel>();
 
         // Register background services
         services.AddHostedService<ApiKeyUpdateService>();
