@@ -7,8 +7,6 @@ using BarFoo.Presentation.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 
 using Microsoft.Extensions.Logging;
 
@@ -42,8 +40,8 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
 
-        WeakReferenceMessenger.Default.Register<FilterChangedMessage>(this, HandleFilterChanged);
-        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
+        _messagingService.Register<FilterChangedMessage>(this, HandleFilterChanged);
+        _messagingService.Register<ApiKeyMessages.ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
     }
 
     public async Task LoadObjectivesAsync()
@@ -137,8 +135,8 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
-        WeakReferenceMessenger.Default.Unregister<FilterChangedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeyStateChangedMessage>(this);
+        _messagingService.Unregister<FilterChangedMessage>(this);
+        _messagingService.Unregister<ApiKeyMessages.ApiKeyStateChangedMessage>(this);
         GC.SuppressFinalize(this);
     }
 }

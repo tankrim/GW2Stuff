@@ -6,7 +6,6 @@ using BarFoo.Core.Interfaces;
 using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
 
 using Microsoft.Extensions.Logging;
 
@@ -40,10 +39,10 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IDisposable
         PropertyChanged += OnPropertyChanged;
         ApiKeyFilters.CollectionChanged += OnApiKeyFiltersChanged;
 
-        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeyAddedMessage>(this, HandleApiKeyAdded);
-        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeyDeletedMessage>(this, HandleApiKeyDeleted);
-        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeysLoadedMessage>(this, HandleLoadedApiKeys);
-        WeakReferenceMessenger.Default.Register<IsLoadingMessage>(this, HandleIsLoading);
+        _messagingService.Register<ApiKeyMessages.ApiKeyAddedMessage>(this, HandleApiKeyAdded);
+        _messagingService.Register<ApiKeyMessages.ApiKeyDeletedMessage>(this, HandleApiKeyDeleted);
+        _messagingService.Register<ApiKeyMessages.ApiKeysLoadedMessage>(this, HandleLoadedApiKeys);
+        _messagingService.Register<IsLoadingMessage>(this, HandleIsLoading);
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -130,10 +129,10 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IDisposable
             filter.PropertyChanged -= OnApiKeyFilterPropertyChanged;
         }
 
-        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeyAddedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeyDeletedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeysLoadedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<IsLoadingMessage>(this);
+        _messagingService.Unregister<ApiKeyMessages.ApiKeyAddedMessage>(this);
+        _messagingService.Unregister<ApiKeyMessages.ApiKeyDeletedMessage>(this);
+        _messagingService.Unregister<ApiKeyMessages.ApiKeysLoadedMessage>(this);
+        _messagingService.Unregister<IsLoadingMessage>(this);
         GC.SuppressFinalize(this);
     }
 }

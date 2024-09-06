@@ -3,7 +3,6 @@ using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 
 using Microsoft.Extensions.Logging;
 
@@ -46,9 +45,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
 
-        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
-        WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, HandleIsUpdating);
-        WeakReferenceMessenger.Default.Register<ApiKeyMessages.ApiKeysUpdatedMessage>(this, HandleApiKeysUpdated);
+        _messagingService.Register<ApiKeyMessages.ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
+        _messagingService.Register<IsUpdatingMessage>(this, HandleIsUpdating);
+        _messagingService.Register<ApiKeyMessages.ApiKeysUpdatedMessage>(this, HandleApiKeysUpdated);
     }
 
     public async Task InitializeAsync()
@@ -61,9 +60,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
-        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeyStateChangedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<IsUpdatingMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ApiKeyMessages.ApiKeysUpdatedMessage>(this);
+        _messagingService.Unregister<ApiKeyMessages.ApiKeyStateChangedMessage>(this);
+        _messagingService.Unregister<IsUpdatingMessage>(this);
+        _messagingService.Unregister<ApiKeyMessages.ApiKeysUpdatedMessage>(this);
         ObjectivesVM.Dispose();
         GC.SuppressFinalize(this);
     }

@@ -1,14 +1,16 @@
 ﻿using Avalonia.Threading;
 
+using BarFoo.Core.Interfaces;
 using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
 
 namespace BarFoo.Presentation.ViewModels;
 
 public partial class StatusBarViewModel : ViewModelBase, IDisposable
 {
+    private readonly IMessagingService _messagingService;
+
     [ObservableProperty]
     private bool _isUpdating;
 
@@ -20,16 +22,18 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
 
     private readonly DispatcherTimer _timer;
 
-    public StatusBarViewModel()
+    public StatusBarViewModel(IMessagingService messagingService)
     {
+        _messagingService = messagingService;
+
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(5)
         };
         _timer.Tick += Timer_Tick;
 
-        WeakReferenceMessenger.Default.Register<ObjectiveMessages.ObjectivesChangedMessage>(this, HandleObjectivesChanged);
-        WeakReferenceMessenger.Default.Register<IsUpdatingMessage>(this, HandleIsUpdating);
+        _messagingService.Register<ObjectiveMessages.ObjectivesChangedMessage>(this, HandleObjectivesChanged);
+        _messagingService.Register<IsUpdatingMessage>(this, HandleIsUpdating);
     }
 
     private void HandleObjectivesChanged(object recipient, ObjectiveMessages.ObjectivesChangedMessage message)
@@ -65,8 +69,8 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
     {
         _timer.Stop();
         _timer.Tick -= Timer_Tick;
-        WeakReferenceMessenger.Default.Unregister<ObjectiveMessages.ObjectivesChangedMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<IsUpdatingMessage>(this);
+        _messagingService.Unregister<ObjectiveMessages.ObjectivesChangedMessage>(this);
+        _messagingService.Unregister<IsUpdatingMessage>(this);
         GC.SuppressFinalize(this);
     }
 }
