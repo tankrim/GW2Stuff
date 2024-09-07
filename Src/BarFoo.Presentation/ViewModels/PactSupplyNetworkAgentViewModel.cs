@@ -27,8 +27,8 @@ public partial class PactSupplyNetworkAgentViewModel : ViewModelBase
     {
         _pactSupplyNetworkAgentService = pactSupplyNetworkAgentService ?? throw new ArgumentNullException(nameof(pactSupplyNetworkAgentService));
         _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
+        _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _notificationService = notificationService;
     }
 
 
