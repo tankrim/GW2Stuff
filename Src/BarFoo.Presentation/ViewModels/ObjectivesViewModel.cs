@@ -25,7 +25,7 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private ObservableCollection<ObjectiveWithOthersDto> _filteredObjectives = new();
 
-    private FilterViewModel _currentFilter;
+    private readonly FilterViewModel _currentFilter;
 
     public ObjectivesViewModel(
         FilterViewModel filterViewModel,
@@ -68,18 +68,19 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
     {
         try
         {
+            var filterState = _currentFilter.GetFilterState();
             var filtered = Objectives.Where(o =>
-                            (_currentFilter.FilterDaily && o.ApiEndpoint == "daily" ||
-                              _currentFilter.FilterWeekly && o.ApiEndpoint == "weekly" ||
-                              _currentFilter.FilterSpecial && o.ApiEndpoint == "special" ||
-                            (!_currentFilter.FilterDaily && !_currentFilter.FilterWeekly && !_currentFilter.FilterSpecial)) &&
-                            (_currentFilter.FilterPvE && o.Track == "PvE" ||
-                              _currentFilter.FilterPvP && o.Track == "PvP" ||
-                              _currentFilter.FilterWvW && o.Track == "WvW" ||
-                            (!_currentFilter.FilterPvE && !_currentFilter.FilterPvP && !_currentFilter.FilterWvW)) &&
-                            (!_currentFilter.FilterCompleted || (o.Claimed || o.ProgressCurrent == o.ProgressComplete)) &&
-                            (!_currentFilter.FilterNotCompleted || (!o.Claimed && o.ProgressCurrent != o.ProgressComplete)) &&
-                              _currentFilter.ApiKeyFilters.Any(af => af.IsSelected && af.ApiKeyName == o.ApiKeyName)
+                            (filterState.FilterDaily && o.ApiEndpoint == "daily" ||
+                              filterState.FilterWeekly && o.ApiEndpoint == "weekly" ||
+                              filterState.FilterSpecial && o.ApiEndpoint == "special" ||
+                            (!filterState.FilterDaily && !filterState.FilterWeekly && !filterState.FilterSpecial)) &&
+                            (filterState.FilterPvE && o.Track == "PvE" ||
+                              filterState.FilterPvP && o.Track == "PvP" ||
+                              filterState.FilterWvW && o.Track == "WvW" ||
+                            (!filterState.FilterPvE && !filterState.FilterPvP && !filterState.FilterWvW)) &&
+                            (!filterState.FilterCompleted || (o.Claimed || o.ProgressCurrent == o.ProgressComplete)) &&
+                            (!filterState.FilterNotCompleted || (!o.Claimed && o.ProgressCurrent != o.ProgressComplete)) &&
+                              filterState.SelectedApiKeys.Contains(o.ApiKeyName)
                            ).ToList();
 
             _logger.LogDebug("ApplyCurrentFilter before clearing. Current count: {Count}", FilteredObjectives.Count);
@@ -91,8 +92,8 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
 
             _logger.LogInformation("Filter applied. Filtered objectives count: {Count}", FilteredObjectives.Count);
             _logger.LogDebug("Filter state: daily={fd}, weekly={fw}, special={fs}, pve={fpve}, pvp={fpvp}, wvw={fwvw}, completed={fc}",
-                _currentFilter.FilterDaily, _currentFilter.FilterWeekly, _currentFilter.FilterSpecial,
-                _currentFilter.FilterPvE, _currentFilter.FilterPvP, _currentFilter.FilterWvW, _currentFilter.FilterCompleted);
+                filterState.FilterDaily, filterState.FilterWeekly, filterState.FilterSpecial,
+                filterState.FilterPvE, filterState.FilterPvP, filterState.FilterWvW, filterState.FilterCompleted);
 
             _messagingService.Send(new ObjectiveMessages.ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
         }
@@ -105,7 +106,9 @@ public partial class ObjectivesViewModel : ViewModelBase, IDisposable
     private void HandleFilterChanged(object recipient, FilterChangedMessage message)
     {
         _logger.LogInformation("Received FilterChangedMessage. Applying filter...");
-        _logger.LogDebug("Received FilterChangedMessage state: daily={fd}, weekly={fw}, special={fs}, pve={fpve}, pvp={fpvp}, wvw={fwvw}, completed={fc}", message.Value.FilterDaily, message.Value.FilterWeekly, message.Value.FilterSpecial, message.Value.FilterPvE, message.Value.FilterPvP, message.Value.FilterWvW, message.Value.FilterCompleted);
+        _logger.LogDebug("Received FilterChangedMessage state: daily={fd}, weekly={fw}, special={fs}, pve={fpve}, pvp={fpvp}, wvw={fwvw}, completed={fc}",
+            message.FilterState.FilterDaily, message.FilterState.FilterWeekly, message.FilterState.FilterSpecial, message.FilterState.FilterPvE,
+            message.FilterState.FilterPvP, message.FilterState.FilterWvW, message.FilterState.FilterCompleted);
         ApplyCurrentFilter();
         _messagingService.Send(new ObjectiveMessages.ObjectivesChangedMessage(nameof(FilteredObjectives), FilteredObjectives));
     }

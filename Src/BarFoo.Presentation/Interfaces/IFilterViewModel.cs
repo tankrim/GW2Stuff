@@ -1,16 +1,15 @@
-﻿using System.Collections.ObjectModel;
-
-using BarFoo.Core.Interfaces;
+﻿using BarFoo.Core.Interfaces;
 
 using BarFoo.Core.Messages;
+using BarFoo.Presentation.Filters;
 
 using CommunityToolkit.Mvvm.Input;
 
-namespace BarFoo.Presentation.ViewModels;
+namespace BarFoo.Presentation.Interfaces;
 
 public interface IFilterViewModel : IFilter
 {
-    ObservableCollection<ApiKeyFilter> ApiKeyFilters { get; }
+    FilterState FilterState { get; }
     bool IsLoading { get; set; }
 
     void HandleApiKeyAdded(object recipient, ApiKeyMessages.ApiKeyAddedMessage message);

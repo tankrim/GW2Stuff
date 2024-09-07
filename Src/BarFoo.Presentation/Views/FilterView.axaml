@@ -11,18 +11,18 @@
     <StackPanel Grid.Column="0"
                 Orientation="Horizontal"
                 Spacing="10">
-      <CheckBox Content="Daily" IsChecked="{Binding FilterDaily}"/>
-      <CheckBox Content="Weekly" IsChecked="{Binding FilterWeekly}"/>
-      <CheckBox Content="Special" IsChecked="{Binding FilterSpecial}"/>
-      <CheckBox Content="Incomplete" IsChecked="{Binding FilterNotCompleted}"/>
-      <CheckBox Content="Complete" IsChecked="{Binding FilterCompleted}"/>
-      <CheckBox Content="PvE" IsChecked="{Binding FilterPvE}"/>
-      <CheckBox Content="PvP" IsChecked="{Binding FilterPvP}"/>
-      <CheckBox Content="WvW" IsChecked="{Binding FilterWvW}"/>
+      <CheckBox Content="Daily" IsChecked="{Binding FilterState.FilterDaily}"/>
+      <CheckBox Content="Weekly" IsChecked="{Binding FilterState.FilterWeekly}"/>
+      <CheckBox Content="Special" IsChecked="{Binding FilterState.FilterSpecial}"/>
+      <CheckBox Content="Incomplete" IsChecked="{Binding FilterState.FilterNotCompleted}"/>
+      <CheckBox Content="Complete" IsChecked="{Binding FilterState.FilterCompleted}"/>
+      <CheckBox Content="PvE" IsChecked="{Binding FilterState.FilterPvE}"/>
+      <CheckBox Content="PvP" IsChecked="{Binding FilterState.FilterPvP}"/>
+      <CheckBox Content="WvW" IsChecked="{Binding FilterState.FilterWvW}"/>
     </StackPanel>
 
     <ItemsControl Grid.Column="1"
-                  ItemsSource="{Binding ApiKeyFilters}"
+                  ItemsSource="{Binding FilterState.ApiKeyFilters}"
                   VerticalAlignment="Center"
                   Margin="50 0 0 0">
       <ItemsControl.ItemsPanel>

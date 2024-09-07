@@ -1,9 +1,10 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.ComponentModel;
 
 using BarFoo.Core.Interfaces;
 using BarFoo.Core.Messages;
+using BarFoo.Presentation.Filters;
+using BarFoo.Presentation.Interfaces;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,17 +18,8 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
     private readonly ILogger<FilterViewModel> _logger;
     private readonly IMessagingService _messagingService;
 
-    [ObservableProperty] private bool _filterDaily;
-    [ObservableProperty] private bool _filterWeekly;
-    [ObservableProperty] private bool _filterSpecial;
-    [ObservableProperty] private bool _filterNotCompleted;
-    [ObservableProperty] private bool _filterCompleted;
-    [ObservableProperty] private bool _filterPvE;
-    [ObservableProperty] private bool _filterPvP;
-    [ObservableProperty] private bool _filterWvW;
-
     [ObservableProperty]
-    private ObservableCollection<ApiKeyFilter> _apiKeyFilters = [];
+    private FilterState _filterState;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -39,10 +31,21 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
 
+        FilterState = new FilterState
+        {
+            FilterDaily = false,
+            FilterWeekly = false,
+            FilterSpecial = false,
+            FilterPvE = false,
+            FilterPvP = false,
+            FilterWvW = false,
+            FilterNotCompleted = false,
+            FilterCompleted = false
+        };
         SendFilterChangedCommand = new RelayCommand(SendFilterChangedMessage);
 
-        PropertyChanged += OnPropertyChanged;
-        ApiKeyFilters.CollectionChanged += OnApiKeyFiltersChanged;
+        FilterState.PropertyChanged += OnFilterStatePropertyChanged;
+        FilterState.ApiKeyFilters.CollectionChanged += OnApiKeyFiltersChanged;
 
         _messagingService.Register<ApiKeyMessages.ApiKeyAddedMessage>(this, HandleApiKeyAdded);
         _messagingService.Register<ApiKeyMessages.ApiKeyDeletedMessage>(this, HandleApiKeyDeleted);
@@ -50,9 +53,9 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
         _messagingService.Register<IsLoadingMessage>(this, HandleIsLoading);
     }
 
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnFilterStatePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        _logger.LogDebug("FilterViewModel property changed: {PropertyName}", e.PropertyName);
+        _logger.LogDebug("FilterState property changed: {PropertyName}", e.PropertyName);
         SendFilterChangedCommand.Execute(null);
     }
 
@@ -88,34 +91,38 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
 
     private void SendFilterChangedMessage()
     {
-        _logger.LogDebug("FilterViewModel will send FilterChangedMessage. State: daily={fd}, weekly={fw}, special={fs}, notComplete={fnc}, completed={fc}, pve={fpve}, pvp={fpvp}, wvw={fwvw},  apiKeys={ak}",
-            FilterDaily, FilterWeekly, FilterSpecial, FilterNotCompleted, FilterCompleted, FilterPvE, FilterPvP, FilterWvW,
-            string.Join(", ", ApiKeyFilters.Where(f => f.IsSelected).Select(f => f.ApiKeyName)));
-        _messagingService.Send(new FilterChangedMessage(this));
+        _logger.LogDebug("FilterViewModel will send FilterChangedMessage. "
+            + "State: daily={fd}, weekly={fw}, special={fs}, notComplete={fnc}, completed={fc}, pve={fpve}, pvp={fpvp}, wvw={fwvw}, apiKeys={ak}",
+            FilterState.FilterDaily, FilterState.FilterWeekly, FilterState.FilterSpecial, FilterState.FilterNotCompleted, FilterState.FilterCompleted,
+            FilterState.FilterPvE, FilterState.FilterPvP, FilterState.FilterWvW,
+            string.Join(", ", FilterState.ApiKeyFilters.Where(f => f.IsSelected).Select(f => f.ApiKeyName)));
+        _messagingService.Send(new FilterChangedMessage(FilterState));
     }
+
+    public IFilterState GetFilterState() => FilterState;
 
     public void HandleApiKeyAdded(object recipient, ApiKeyMessages.ApiKeyAddedMessage message)
     {
-        ApiKeyFilters.Add(new ApiKeyFilter(message.Value.Name));
+        FilterState.ApiKeyFilters.Add(new ApiKeyFilter(message.Value.Name));
     }
 
     public void HandleApiKeyDeleted(object recipient, ApiKeyMessages.ApiKeyDeletedMessage message)
     {
-        var filterToRemove = ApiKeyFilters.FirstOrDefault(f => f.ApiKeyName == message.Value);
+        var filterToRemove = FilterState.ApiKeyFilters.FirstOrDefault(f => f.ApiKeyName == message.Value);
         if (filterToRemove != null)
         {
-            ApiKeyFilters.Remove(filterToRemove);
+            FilterState.ApiKeyFilters.Remove(filterToRemove);
         }
     }
 
     public void HandleApiKeysLoaded(object recipient, ApiKeyMessages.ApiKeysLoadedMessage message)
     {
-        ApiKeyFilters.Clear();
+        FilterState.ApiKeyFilters.Clear();
         foreach (var dto in message.Value)
         {
-            ApiKeyFilters.Add(new ApiKeyFilter(dto.Name));
+            FilterState.ApiKeyFilters.Add(new ApiKeyFilter(dto.Name));
         }
-        _logger.LogInformation("Added {Count} API key filters", ApiKeyFilters.Count);
+        _logger.LogInformation("Added {Count} API key filters", FilterState.ApiKeyFilters.Count);
         SendFilterChangedCommand.Execute(null);
     }
 
@@ -126,10 +133,10 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
 
     public void Dispose()
     {
-        PropertyChanged -= OnPropertyChanged;
-        ApiKeyFilters.CollectionChanged -= OnApiKeyFiltersChanged;
+        FilterState.PropertyChanged -= OnFilterStatePropertyChanged;
+        FilterState.ApiKeyFilters.CollectionChanged -= OnApiKeyFiltersChanged;
 
-        foreach (var filter in ApiKeyFilters)
+        foreach (var filter in FilterState.ApiKeyFilters)
         {
             filter.PropertyChanged -= OnApiKeyFilterPropertyChanged;
         }
@@ -139,19 +146,5 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
         _messagingService.Unregister<ApiKeyMessages.ApiKeysLoadedMessage>(this);
         _messagingService.Unregister<IsLoadingMessage>(this);
         GC.SuppressFinalize(this);
-    }
-}
-
-public partial class ApiKeyFilter : ObservableObject
-{
-    public string ApiKeyName { get; }
-
-    [ObservableProperty]
-    private bool _isSelected;
-
-    public ApiKeyFilter(string apiKeyName)
-    {
-        ApiKeyName = apiKeyName;
-        IsSelected = true;
     }
 }

@@ -12,6 +12,7 @@ using BarFoo.Data.Repositories;
 using BarFoo.Domain.Mappings;
 using BarFoo.Infrastructure.ApiClients;
 using BarFoo.Infrastructure.Services;
+using BarFoo.Presentation.Interfaces;
 using BarFoo.Presentation.Services;
 using BarFoo.Presentation.ViewModels;
 using BarFoo.Presentation.Views;
@@ -83,6 +84,7 @@ public partial class App : Application
         services.AddAutoMapper(typeof(MappingProfile));
         ConfigureHttpClients(services);
         ConfigureApplicationServices(services);
+        ConfigureFilters(services);
         ConfigureViewModels(services);
         ConfigureViews(services);
         services.AddSingleton<IAppSettings>(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
@@ -225,6 +227,14 @@ public partial class App : Application
             loggingBuilder.ClearProviders();
             loggingBuilder.AddSerilog(dispose: true);
         });
+    }
+
+    public static void ConfigureFilters(IServiceCollection services)
+    {
+        // Register FilterViewModel as the implementation of IFilter and IFilterViewModel
+        services.AddSingleton<FilterViewModel>();
+        services.AddSingleton<IFilter>(sp => sp.GetRequiredService<FilterViewModel>());
+        services.AddSingleton<IFilterViewModel>(sp => sp.GetRequiredService<FilterViewModel>());
     }
 
     private static void ConfigureViewModels(IServiceCollection services)

@@ -60,7 +60,12 @@ public sealed class IsLoadingMessage
     }
 }
 
-public sealed class FilterChangedMessage : ValueChangedMessage<IFilter>
+public class FilterChangedMessage
 {
-    public FilterChangedMessage(IFilter filter) : base(filter) { }
+    public IFilterState FilterState { get; }
+
+    public FilterChangedMessage(IFilterState filterState)
+    {
+        FilterState = filterState;
+    }
 }
