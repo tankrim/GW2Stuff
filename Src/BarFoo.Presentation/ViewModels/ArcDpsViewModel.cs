@@ -1,4 +1,8 @@
-﻿using BarFoo.Core.Interfaces;
+﻿using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
+
+using BarFoo.Core.Interfaces;
+using BarFoo.Presentation.Interfaces;
 using BarFoo.Presentation.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,6 +18,7 @@ public partial class ArcDpsViewModel : ViewModelBase
     private readonly IConfigurationService _configService;
     private readonly IFolderPickerService _folderPickerService;
     private readonly IFileDownloadService _fileDownloadService;
+    private readonly INotificationService _notificationService;
 
     [ObservableProperty] private string? _selectedDirectoryPath;
     
@@ -25,12 +30,14 @@ public partial class ArcDpsViewModel : ViewModelBase
         ILogger<ArcDpsViewModel> logger,
         IConfigurationService configService,
         IFolderPickerService folderPickerService,
-        IFileDownloadService fileDownloadService)
+        IFileDownloadService fileDownloadService,
+        INotificationService notificationService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configService = configService ?? throw new ArgumentNullException(nameof(configService));
         _folderPickerService = folderPickerService ?? throw new ArgumentNullException(nameof(folderPickerService));
         _fileDownloadService = fileDownloadService ?? throw new ArgumentNullException(nameof(fileDownloadService));
+        _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
 
         InitializeSelectedDirectoryPath();
     }
@@ -74,6 +81,7 @@ public partial class ArcDpsViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(SelectedDirectoryPath))
         {
             _logger.LogWarning("Download attempted with no directory selected");
+            _notificationService.ShowToast("Please select a download directory first.", NotificationType.Warning);
             return;
         }
 

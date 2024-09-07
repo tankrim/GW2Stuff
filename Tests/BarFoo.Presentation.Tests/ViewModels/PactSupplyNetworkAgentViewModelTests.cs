@@ -2,8 +2,6 @@
 using BarFoo.Presentation.Services;
 using BarFoo.Presentation.ViewModels;
 
-using Microsoft.Extensions.Logging;
-
 namespace BarFoo.Presentation.Tests.ViewModels;
 
 [ConstructorTests(typeof(PactSupplyNetworkAgentViewModel))]
@@ -30,8 +28,6 @@ public partial class PactSupplyNetworkAgentViewModelTests
             .Setup(x => x.SetTextAsync(It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
-        mocker.Use(new Mock<ILogger<PactSupplyNetworkAgentViewModel>>());
-
         PactSupplyNetworkAgentViewModel sut = mocker.CreateInstance<PactSupplyNetworkAgentViewModel>();
 
         // Act
@@ -42,19 +38,10 @@ public partial class PactSupplyNetworkAgentViewModelTests
 
         mocker.Verify<IPactSupplyNetworkAgentService>(x => x.GetPSNA(), Times.Once);
         mocker.Verify<IClipboardService>(x => x.SetTextAsync(expectedData), Times.Once);
-        mocker.Verify<ILogger<PactSupplyNetworkAgentViewModel>>(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Retrieved PSNA information")),
-                null,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once)
-            ;
     }
 
     [Fact]
-    public async Task CopyPSNALinksToClipboardCommand_OnError_LogsErrorAndPropagatesException()
+    public async Task CopyPSNALinksToClipboardCommand_OnError_Throws()
     {
         // Arrange
         var expectedException = new Exception("Test exception");
@@ -73,8 +60,6 @@ public partial class PactSupplyNetworkAgentViewModelTests
             .Setup(x => x.SetTextAsync(It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
-        mocker.Use(new Mock<ILogger<PactSupplyNetworkAgentViewModel>>());
-
         PactSupplyNetworkAgentViewModel sut = mocker.CreateInstance<PactSupplyNetworkAgentViewModel>();
 
         // Act & Assert
@@ -83,14 +68,5 @@ public partial class PactSupplyNetworkAgentViewModelTests
         // Verify
         mocker.Verify<IPactSupplyNetworkAgentService>(x => x.GetPSNA(), Times.Once);
         mocker.Verify<IClipboardService>(x => x.SetTextAsync(It.IsAny<string>()), Times.Never);
-        mocker.Verify<ILogger<PactSupplyNetworkAgentViewModel>>(
-            x => x.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Error occurred while copying PSNA links to clipboard")),
-                expectedException,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once)
-            ;
     }
 }

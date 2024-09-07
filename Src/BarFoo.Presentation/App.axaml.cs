@@ -2,6 +2,7 @@ using System.Reflection;
 
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Notifications;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 
@@ -217,6 +218,17 @@ public partial class App : Application
         services.AddTransient<IFileDownloadService, FileDownloadService>();
         services.AddTransient<IMessagingService, WeakReferenceMessagingService>();
         services.AddTransient<IFilterViewModel, FilterViewModel>();
+        services.AddSingleton<WindowNotificationManager>(provider =>
+        {
+            var mainWindow = provider.GetRequiredService<MainWindow>();
+            return new WindowNotificationManager(mainWindow)
+            {
+                Position = NotificationPosition.TopRight,
+                MaxItems = 3
+            };
+        });
+
+        services.AddSingleton<INotificationService, NotificationService>();
 
         // Register background services
         services.AddHostedService<ApiKeyUpdateService>();
@@ -239,7 +251,7 @@ public partial class App : Application
 
     private static void ConfigureViewModels(IServiceCollection services)
     {
-        services.AddTransient<StatusBarViewModel>();
+        services.AddSingleton<StatusBarViewModel>();
         services.AddTransient<ArcDpsViewModel>();
         services.AddTransient<PactSupplyNetworkAgentViewModel>();
         services.AddSingleton<FilterViewModel>();
