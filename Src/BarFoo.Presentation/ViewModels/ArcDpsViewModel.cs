@@ -89,15 +89,22 @@ public partial class ArcDpsViewModel : ViewModelBase
         {
             var downloadUrl = "https://www.deltaconnected.com/arcdps/x64/d3d11.dll";
             var fileName = "d3d11.dll";
-            var filePath = Path.Combine(SelectedDirectoryPath, fileName);
 
-            await _fileDownloadService.DownloadFileAsync(downloadUrl, filePath);
+            // Ensure SelectedDirectoryPath is a valid file system path
+            var directoryPath = new Uri(SelectedDirectoryPath).LocalPath;
+            var filePath = Path.Combine(directoryPath, fileName);
 
+            _notificationService.UpdateStatus("Downloading ArcDPS...", NotificationType.Information);
+            await _fileDownloadService.DownloadFileAsync(downloadUrl, directoryPath);
             _logger.LogInformation("File downloaded and saved: {FilePath}", filePath);
+            _notificationService.ShowToast("ArcDPS downloaded successfully!", NotificationType.Success);
+            _notificationService.UpdateStatus("ArcDPS download complete.", NotificationType.Success);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in DownloadAndSaveFile");
+            _notificationService.ShowToast("Failed to download ArcDPS. Please try again.", NotificationType.Error);
+            _notificationService.UpdateStatus("ArcDPS download failed.", NotificationType.Error);
         }
     }
 }
