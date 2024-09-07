@@ -27,12 +27,17 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
     private string _statusMessage = string.Empty;
 
     [ObservableProperty]
+    private bool _isStatusActive;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsStatusActive))]
     private NotificationType _statusType = NotificationType.Information;
 
 
     public StatusBarViewModel(IMessagingService messagingService)
     {
-        _messagingService = messagingService;
+        _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
+
 
         _clearTimer = new DispatcherTimer
         {
@@ -41,7 +46,6 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
         _clearTimer.Tick += ClearTimer_Tick;
 
         _messagingService.Register<ObjectiveMessages.ObjectivesChangedMessage>(this, HandleObjectivesChanged);
-        _messagingService.Register<IsUpdatingMessage>(this, HandleIsUpdating);
     }
 
     private void HandleObjectivesChanged(object recipient, ObjectiveMessages.ObjectivesChangedMessage message)
@@ -56,17 +60,6 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
         }
     }
 
-    private void HandleIsUpdating(object recipient, IsUpdatingMessage message)
-    {
-        SetIsUpdatingTemporarily();
-    }
-
-    public void SetIsUpdatingTemporarily()
-    {
-        IsUpdating = true;
-        RestartClearTimer();
-    }
-
     private void ClearTimer_Tick(object? sender, EventArgs e)
     {
         ClearStatus();
@@ -76,7 +69,7 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
     {
         StatusMessage = message;
         StatusType = type;
-        SetIsUpdatingTemporarily();
+        IsStatusActive = true;
         RestartClearTimer();
     }
 
@@ -89,7 +82,8 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
     private void ClearStatus()
     {
         StatusMessage = string.Empty;
-        StatusType = NotificationType.Information;
+        IsStatusActive = false;
+        StatusType = 0;
         IsUpdating = false;
         _clearTimer.Stop();
     }

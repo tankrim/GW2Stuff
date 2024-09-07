@@ -16,95 +16,48 @@
   </UserControl.Resources>
 
   <Border Background="{DynamicResource SystemChromeLowColor}"
+          BorderThickness="8"
           CornerRadius="0,0,4,4">
 
     <Grid ColumnDefinitions="Auto,*,Auto">
 
-      <!-- Top Bevel -->
-      <Border Grid.ColumnSpan="3"
-              Height="2"
-              VerticalAlignment="Top"
-              Background="{DynamicResource SystemChromeHighColor}"/>
-
-      <!-- Left Bevel -->
-      <Border Grid.RowSpan="3"
-              Width="2"
-              HorizontalAlignment="Left"
-              CornerRadius="0,0,0,4"
-              Background="{DynamicResource SystemChromeHighColor}">
-      </Border>
-
-      <!-- Bottom Shadow -->
-      <Border Grid.ColumnSpan="3"
-              Height="2"
-              VerticalAlignment="Bottom"
-              CornerRadius="0,0,4,4"
-              Background="{DynamicResource SystemBaseLowColor}">
-      </Border>
-
-      <!-- Right Shadow -->
-      <Border Grid.Column="2"
-              Width="2"
-              HorizontalAlignment="Right"
-              CornerRadius="0,0,4,0"
-              Background="{DynamicResource SystemBaseLowColor}">
-      </Border>
-
       <!-- Status Bar Content -->
       <!-- Notifications -->
-       <TextBlock x:Name="StatusTextBlock"
-                 Grid.Column="0"
-               Text="{Binding StatusMessage}"
-               VerticalAlignment="Center"
-               Margin="10,0">
-        <TextBlock.Styles>
-          <Style Selector="TextBlock">
-            <!--<Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />-->
-            <Setter Property="Foreground" Value="White" />
+      <Border x:Name="StatusBorder"
+        Grid.Column="0"
+        BorderThickness="5"
+        CornerRadius="15"
+        Padding="5">
+        <Border.Styles>
+          <Style Selector="Border">
+            <Setter Property="IsVisible" Value="{Binding IsStatusActive}"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
           </Style>
-          <Style Selector="TextBlock.Error">
-            <Setter Property="Foreground" Value="Red" />
+          <Style Selector="Border.Error">
+            <Setter Property="BorderBrush" Value="{DynamicResource Error1}"/>
           </Style>
-          <Style Selector="TextBlock.Warning">
-            <Setter Property="Foreground" Value="Orange" />
+          <Style Selector="Border.Warning">
+            <Setter Property="BorderBrush" Value="{DynamicResource Warning1}"/>
           </Style>
-          <Style Selector="TextBlock.Success">
-            <Setter Property="Foreground" Value="Green" />
+          <Style Selector="Border.Success">
+            <Setter Property="BorderBrush" Value="{DynamicResource Success1}"/>
           </Style>
-        </TextBlock.Styles>
-        <TextBlock.DataTemplates>
-          <DataTemplate DataType="not:NotificationType">
-            <ContentPresenter Content="{Binding}">
-              <ContentPresenter.DataTemplates>
-                <DataTemplate DataType="not:NotificationType">
-                  <TextBlock Text="{Binding}">
-                    <TextBlock.Styles>
-                      <Style Selector="TextBlock">
-                        <Style.Animations>
-                          <Animation Duration="0:0:0.2">
-                            <KeyFrame Cue="0%">
-                              <Setter Property="Opacity" Value="0"/>
-                            </KeyFrame>
-                            <KeyFrame Cue="100%">
-                              <Setter Property="Opacity" Value="1"/>
-                            </KeyFrame>
-                          </Animation>
-                        </Style.Animations>
-                      </Style>
-                    </TextBlock.Styles>
-                  </TextBlock>
-                </DataTemplate>
-              </ContentPresenter.DataTemplates>
-            </ContentPresenter>
-          </DataTemplate>
-        </TextBlock.DataTemplates>
-      </TextBlock>
+          <Style Selector="Border.Information">
+            <Setter Property="BorderBrush" Value="#FFE6E6E6"/>
+          </Style>
+        </Border.Styles>
+        <TextBlock Text="{Binding StatusMessage}"
+                   VerticalAlignment="Center"
+                   Margin="10,0">
+        </TextBlock>
+      </Border>
 
-      <!-- # Filtered(=visible), # Loaded, Updating...-->
+      <!-- # Visible, # Loaded,...-->
       <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" Margin="0,0,10,0">
-        <TextBlock Text="{Binding FilteredObjectivesCount, StringFormat=Filtered: {0}}" VerticalAlignment="Center" />
-        <TextBlock Text="{Binding LoadedObjectivesCount, StringFormat=Loaded: {0}}" VerticalAlignment="Center" />
-        <TextBlock Text="Updating..." IsVisible="{Binding IsUpdating}" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding FilteredObjectivesCount, StringFormat=Visible: {0}}"
+                   VerticalAlignment="Center" />
+        <TextBlock Text="{Binding LoadedObjectivesCount, StringFormat=Loaded: {0}}"
+                   VerticalAlignment="Center" />
       </StackPanel>
     </Grid>
   </Border>

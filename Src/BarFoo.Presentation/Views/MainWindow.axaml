@@ -9,7 +9,10 @@
         xmlns:views="clr-namespace:BarFoo.Presentation.Views"
         Icon="/Assets/avalonia-logo.ico"
         Title="BarFoo.Presentation">
-
+  <Panel>
   <views:MainView />
-
+    <!--<NotificationCard Name="NotificationArea"
+                          VerticalAlignment="Top"
+                          HorizontalAlignment="Right" />-->
+  </Panel>
 </Window>

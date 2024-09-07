@@ -210,25 +210,6 @@ public partial class App : Application
         services.AddScoped<IApiKeyService, ApiKeyService>();
         services.AddScoped<IFetcherService, FetcherService>();
         services.AddSingleton<IStore, Store>();
-        services.AddTransient<IClipboardService, ClipboardService>();
-        services.AddTransient<IPactSupplyNetworkAgentService, PactSupplyNetworkAgentService>();
-        services.AddTransient<IFolderPickerService, FolderPickerService>();
-        services.AddHttpClient();
-        services.AddTransient<IHttpClientWrapper, HttpClientWrapper>();
-        services.AddTransient<IFileDownloadService, FileDownloadService>();
-        services.AddTransient<IMessagingService, WeakReferenceMessagingService>();
-        services.AddTransient<IFilterViewModel, FilterViewModel>();
-        services.AddSingleton<WindowNotificationManager>(provider =>
-        {
-            var mainWindow = provider.GetRequiredService<MainWindow>();
-            return new WindowNotificationManager(mainWindow)
-            {
-                Position = NotificationPosition.TopRight,
-                MaxItems = 3
-            };
-        });
-
-        services.AddSingleton<INotificationService, NotificationService>();
 
         // Register background services
         services.AddHostedService<ApiKeyUpdateService>();
@@ -251,6 +232,27 @@ public partial class App : Application
 
     private static void ConfigureViewModels(IServiceCollection services)
     {
+        services.AddTransient<IClipboardService, ClipboardService>();
+        services.AddTransient<IPactSupplyNetworkAgentService, PactSupplyNetworkAgentService>();
+        services.AddTransient<IFolderPickerService, FolderPickerService>();
+        services.AddHttpClient();
+        services.AddTransient<IHttpClientWrapper, HttpClientWrapper>();
+        services.AddTransient<IFileDownloadService, FileDownloadService>();
+        services.AddTransient<IMessagingService, WeakReferenceMessagingService>();
+        services.AddTransient<IFilterViewModel, FilterViewModel>();
+        services.AddSingleton<WindowNotificationManager>(provider =>
+        {
+            var mainWindow = provider.GetRequiredService<MainWindow>();
+            return new WindowNotificationManager(mainWindow)
+            {
+                Position = NotificationPosition.TopRight,
+                MaxItems = 3
+            };
+        });
+
+        services.AddSingleton<INotificationService, NotificationService>();
+        services.AddSingleton<IStatusUpdateService, StatusUpdateService>();
+
         services.AddSingleton<StatusBarViewModel>();
         services.AddTransient<ArcDpsViewModel>();
         services.AddTransient<PactSupplyNetworkAgentViewModel>();

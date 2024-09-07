@@ -1,5 +1,6 @@
 ﻿using BarFoo.Core.Interfaces;
 using BarFoo.Core.Messages;
+using BarFoo.Presentation.Interfaces;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,6 +14,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     private readonly ILogger<MainViewModel> _logger;
     private readonly IStore _store;
     private readonly IMessagingService _messagingService;
+    private readonly IStatusUpdateService _statusUpdateService;
 
     public ApiKeyViewModel ApiKeyVM { get; }
     public ObjectivesViewModel ObjectivesVM { get; }
@@ -33,7 +35,8 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         StatusBarViewModel statusBarVM,
         IStore store,
         ILogger<MainViewModel> logger,
-        IMessagingService messagingService)
+        IMessagingService messagingService,
+        IStatusUpdateService statusUpdateService)
     {
         ApiKeyVM = apiKeyVM ?? throw new ArgumentNullException(nameof(apiKeyVM));
         ObjectivesVM = objectivesVM ?? throw new ArgumentNullException(nameof(objectivesVM));
@@ -44,6 +47,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
+        _statusUpdateService = statusUpdateService ?? throw new ArgumentNullException(nameof(statusUpdateService));
 
         _messagingService.Register<ApiKeyMessages.ApiKeyStateChangedMessage>(this, HandleApiKeyStateChanged);
         _messagingService.Register<IsUpdatingMessage>(this, HandleIsUpdating);
@@ -92,7 +96,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 
     private void HandleIsUpdating(object recipient, IsUpdatingMessage message)
     {
-        StatusBarVM.SetIsUpdatingTemporarily();
+        _statusUpdateService.SetIsUpdatingTemporarily();
     }
 
     private async void HandleApiKeysUpdated(object recipient, ApiKeyMessages.ApiKeysUpdatedMessage message)

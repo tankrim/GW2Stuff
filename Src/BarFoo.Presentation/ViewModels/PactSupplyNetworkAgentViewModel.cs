@@ -42,7 +42,8 @@ public partial class PactSupplyNetworkAgentViewModel : ViewModelBase
 
             await _clipboardService.SetTextAsync(_psnaLinks);
             _logger.LogInformation("Put PSNA information on the clipboard.");
-            _notificationService.UpdateStatus("PSNA Links Copied to Clipboard", NotificationType.Success);
+            _notificationService.UpdateStatus("PSNA Links Copied to Clipboard", NotificationType.Information);
+            _notificationService.ShowToast("foo", NotificationType.Success);
         }
         catch (Exception ex)
         {

@@ -94,6 +94,7 @@
     <SolidColorBrush x:Key="Secondary1" Color="#7E735F"/>
     <SolidColorBrush x:Key="Success1" Color="#34854D"/>
     <SolidColorBrush x:Key="Warning1" Color="#CC4D11"/>
+    <SolidColorBrush x:Key="Error1" Color="#D13438"/>
   </Application.Resources>
 </Application>
 
