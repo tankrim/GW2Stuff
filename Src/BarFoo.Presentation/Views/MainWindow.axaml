@@ -10,9 +10,9 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="BarFoo.Presentation">
   <Panel>
-  <views:MainView />
-    <!--<NotificationCard Name="NotificationArea"
-                          VerticalAlignment="Top"
-                          HorizontalAlignment="Right" />-->
+    <views:MainView />
+    <Border Padding="10" BorderBrush="{DynamicResource SystemAccentColor}">
+      <WindowNotificationManager />
+    </Border>
   </Panel>
 </Window>

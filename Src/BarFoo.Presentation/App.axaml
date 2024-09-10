@@ -14,8 +14,17 @@
       </FluentTheme.Palettes>
     </FluentTheme>
 
+    <Style Selector="NotificationCard">
+      <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+      <Setter Property="BorderBrush" Value="White"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="8"/>
+      <Setter Property="Margin" Value="0 0 0 8"/>
+      <Setter Property="ZIndex" Value="100"/>
+    </Style>
+    
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
-
+    
     <!-- Buttons -->
     <!-- Button -->
     <Style Selector="Button.button">

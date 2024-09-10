@@ -1,6 +1,8 @@
-﻿namespace BarFoo.Presentation.Interfaces;
+﻿using Avalonia.Controls.Notifications;
+
+namespace BarFoo.Presentation.Interfaces;
 
 public interface IStatusUpdateService
 {
-    void SetIsUpdatingTemporarily();
+    void ShowUpdatingNotification();
 }

@@ -7,17 +7,32 @@ namespace BarFoo.Presentation.Services;
 
 public class NotificationService : INotificationService
 {
-    private readonly WindowNotificationManager _notificationManager;
+    private WindowNotificationManager? _notificationManager;
     private readonly StatusBarViewModel _statusBarViewModel;
 
-    public NotificationService(WindowNotificationManager notificationManager, StatusBarViewModel statusBarViewModel)
+    public NotificationService(StatusBarViewModel statusBarViewModel)
     {
-        _notificationManager = notificationManager ?? throw new ArgumentNullException(nameof(notificationManager));
         _statusBarViewModel = statusBarViewModel ?? throw new ArgumentNullException(nameof(statusBarViewModel));
     }
 
+    public void SetNotificationManager(WindowNotificationManager notificationManager)
+    {
+        _notificationManager = notificationManager ?? throw new ArgumentNullException(nameof(notificationManager));
+    }
+
+    //public void ShowToast(string message, NotificationType type = NotificationType.Information)
+    //{
+    //    var avaloniaType = MapNotificationType(type);
+    //    _notificationManager?.Show(new Notification(string.Empty, message, avaloniaType));
+    //}
+
     public void ShowToast(string message, NotificationType type = NotificationType.Information)
     {
+        if (_notificationManager is null)
+        {
+            throw new InvalidOperationException("NotificationManager has not been set.");
+        }
+
         var avaloniaType = MapNotificationType(type);
         _notificationManager.Show(new Notification(string.Empty, message, avaloniaType));
     }

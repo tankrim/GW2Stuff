@@ -37,13 +37,13 @@ public partial class PactSupplyNetworkAgentViewModel : ViewModelBase
     {
         try
         {
+            _notificationService.UpdateStatus("Determining PSNA Links", NotificationType.Information);
             _psnaLinks = await _pactSupplyNetworkAgentService.GetPSNA();
             _logger.LogInformation("Retrieved PSNA information.");
 
             await _clipboardService.SetTextAsync(_psnaLinks);
             _logger.LogInformation("Put PSNA information on the clipboard.");
             _notificationService.UpdateStatus("PSNA Links Copied to Clipboard", NotificationType.Information);
-            _notificationService.ShowToast("foo", NotificationType.Success);
         }
         catch (Exception ex)
         {

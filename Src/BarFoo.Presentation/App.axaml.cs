@@ -104,7 +104,6 @@ public partial class App : Application
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();
             var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
             mainWindow.DataContext = mainViewModel;
-
             desktop.MainWindow = mainWindow;
 
             await mainViewModel.InitializeAsync();
@@ -240,20 +239,22 @@ public partial class App : Application
         services.AddTransient<IFileDownloadService, FileDownloadService>();
         services.AddTransient<IMessagingService, WeakReferenceMessagingService>();
         services.AddTransient<IFilterViewModel, FilterViewModel>();
-        services.AddSingleton<WindowNotificationManager>(provider =>
-        {
-            var mainWindow = provider.GetRequiredService<MainWindow>();
-            return new WindowNotificationManager(mainWindow)
-            {
-                Position = NotificationPosition.TopRight,
-                MaxItems = 3
-            };
-        });
 
+        services.AddSingleton<MainWindow>();
+        //services.AddSingleton<WindowNotificationManager>(sp =>
+        //{
+        //    var mainWindow = sp.GetRequiredService<MainWindow>();
+        //    return new WindowNotificationManager(mainWindow)
+        //    {
+        //        Position = NotificationPosition.TopRight,
+        //        MaxItems = 3
+        //    };
+        //});
+
+        services.AddSingleton<StatusBarViewModel>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IStatusUpdateService, StatusUpdateService>();
 
-        services.AddSingleton<StatusBarViewModel>();
         services.AddTransient<ArcDpsViewModel>();
         services.AddTransient<PactSupplyNetworkAgentViewModel>();
         services.AddSingleton<FilterViewModel>();

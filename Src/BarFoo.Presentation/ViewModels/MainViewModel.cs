@@ -1,6 +1,9 @@
-﻿using BarFoo.Core.Interfaces;
+﻿using Avalonia.Controls.Notifications;
+
+using BarFoo.Core.Interfaces;
 using BarFoo.Core.Messages;
 using BarFoo.Presentation.Interfaces;
+using BarFoo.Presentation.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -96,7 +99,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 
     private void HandleIsUpdating(object recipient, IsUpdatingMessage message)
     {
-        _statusUpdateService.SetIsUpdatingTemporarily();
+        _statusUpdateService.ShowUpdatingNotification();
     }
 
     private async void HandleApiKeysUpdated(object recipient, ApiKeyMessages.ApiKeysUpdatedMessage message)

@@ -2,6 +2,8 @@
 
 using BarFoo.Presentation.Interfaces;
 
+using Serilog.Core;
+
 namespace BarFoo.Presentation.Services;
 
 public class StatusUpdateService : IStatusUpdateService
@@ -13,8 +15,8 @@ public class StatusUpdateService : IStatusUpdateService
         _notificationService = notificationService;
     }
 
-    public void SetIsUpdatingTemporarily()
+    public void ShowUpdatingNotification()
     {
         _notificationService.UpdateStatus("Updating...", NotificationType.Information);
-    }
+    }    
 }

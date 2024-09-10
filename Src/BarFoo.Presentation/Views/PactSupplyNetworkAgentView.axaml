@@ -6,6 +6,8 @@
              xmlns:vm="using:BarFoo.Presentation.ViewModels"
              x:Class="BarFoo.Presentation.Views.PactSupplyNetworkAgentView"
              x:DataType="vm:PactSupplyNetworkAgentViewModel">
+
+
   <Button Command="{Binding CopyPSNALinksToClipboard}"
           Classes="inverted"
           Margin="0 15 25 0"

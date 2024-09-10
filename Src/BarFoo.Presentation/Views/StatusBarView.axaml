@@ -25,7 +25,7 @@
       <!-- Notifications -->
       <Border x:Name="StatusBorder"
         Grid.Column="0"
-        BorderThickness="5"
+        BorderThickness="2"
         CornerRadius="15"
         Padding="5">
         <Border.Styles>

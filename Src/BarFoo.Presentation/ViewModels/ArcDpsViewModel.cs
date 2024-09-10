@@ -81,7 +81,7 @@ public partial class ArcDpsViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(SelectedDirectoryPath))
         {
             _logger.LogWarning("Download attempted with no directory selected");
-            _notificationService.ShowToast("Please select a download directory first.", NotificationType.Warning);
+            // TODO: Show warning
             return;
         }
 
@@ -97,14 +97,12 @@ public partial class ArcDpsViewModel : ViewModelBase
             _notificationService.UpdateStatus("Downloading ArcDPS...", NotificationType.Information);
             await _fileDownloadService.DownloadFileAsync(downloadUrl, directoryPath);
             _logger.LogInformation("File downloaded and saved: {FilePath}", filePath);
-            _notificationService.ShowToast("ArcDPS downloaded successfully!", NotificationType.Success);
             _notificationService.UpdateStatus("ArcDPS download complete.", NotificationType.Success);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in DownloadAndSaveFile");
-            _notificationService.ShowToast("Failed to download ArcDPS. Please try again.", NotificationType.Error);
-            _notificationService.UpdateStatus("ArcDPS download failed.", NotificationType.Error);
+            // TODO: Show warning
         }
     }
 }
