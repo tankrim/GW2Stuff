@@ -44,8 +44,7 @@
       </Style>
     </Style>
 
-    <Style Selector="Button.inverted">
-      
+    <Style Selector="Button.inverted">      
       <Setter Property="Foreground" Value="{DynamicResource Primary2}"/>
       <Setter Property="Background" Value="#FFE6E6E6"/>
 
@@ -62,6 +61,23 @@
       </Style>
     </Style>
 
+    <Style Selector="Button.warningBar">
+      <Setter Property="Foreground" Value="#FFE6E6E6"/>
+      <Setter Property="Background" Value="{DynamicResource WarningBarButtonBackground}"/>
+
+      <Style Selector="^:pointerover /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource WarningBarButtonForeground}"/>
+        <Setter Property="Background" Value="{DynamicResource WarningBarButtonBackground}"/>
+      </Style>
+
+      <Style Selector="^:pressed /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource WarningBarButtonForeground}"/>
+        <Setter Property="Background" Value="{DynamicResource WarningBarButtonBackground}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource WarningBarButtonBackground}"/>
+      </Style>
+    </Style>
+    
     <!-- Key ListBox  -->
     <Style Selector="ListBox.apiKeys">
       <Setter Property="Height" Value="200"/>
@@ -101,9 +117,14 @@
     <SolidColorBrush x:Key="Primary2" Color="#FF0065B5"/>
     <SolidColorBrush x:Key="Primary3" Color="#00579C"/>
     <SolidColorBrush x:Key="Secondary1" Color="#7E735F"/>
+    <SolidColorBrush x:Key="Tertiary1" Color="#FFE6E6E6"/>
     <SolidColorBrush x:Key="Success1" Color="#34854D"/>
     <SolidColorBrush x:Key="Warning1" Color="#CC4D11"/>
     <SolidColorBrush x:Key="Error1" Color="#D13438"/>
+    <SolidColorBrush x:Key="WarningBarBackground" Color="#F3E5AB"/>
+    <SolidColorBrush x:Key="WarningBarForeground" Color="Black"/>
+    <SolidColorBrush x:Key="WarningBarButtonBackground" Color="#AA4A44"/>
+    <SolidColorBrush x:Key="WarningBarButtonForeground" Color="White"/>
   </Application.Resources>
 </Application>
 

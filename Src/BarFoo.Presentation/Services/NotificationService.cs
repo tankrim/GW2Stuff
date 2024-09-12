@@ -7,47 +7,17 @@ namespace BarFoo.Presentation.Services;
 
 public class NotificationService : INotificationService
 {
-    private WindowNotificationManager? _notificationManager;
-    private readonly StatusBarViewModel _statusBarViewModel;
+    private readonly InformationBarViewModel _statusBarViewModel;
+    private readonly InformationBarViewModel _warningBarViewModel;
 
-    public NotificationService(StatusBarViewModel statusBarViewModel)
+    public NotificationService(InformationBarViewModel statusBarViewModel, InformationBarViewModel warningBarViewModel)
     {
         _statusBarViewModel = statusBarViewModel ?? throw new ArgumentNullException(nameof(statusBarViewModel));
-    }
-
-    public void SetNotificationManager(WindowNotificationManager notificationManager)
-    {
-        _notificationManager = notificationManager ?? throw new ArgumentNullException(nameof(notificationManager));
-    }
-
-    //public void ShowToast(string message, NotificationType type = NotificationType.Information)
-    //{
-    //    var avaloniaType = MapNotificationType(type);
-    //    _notificationManager?.Show(new Notification(string.Empty, message, avaloniaType));
-    //}
-
-    public void ShowToast(string message, NotificationType type = NotificationType.Information)
-    {
-        if (_notificationManager is null)
-        {
-            throw new InvalidOperationException("NotificationManager has not been set.");
-        }
-
-        var avaloniaType = MapNotificationType(type);
-        _notificationManager.Show(new Notification(string.Empty, message, avaloniaType));
+        _warningBarViewModel = warningBarViewModel ?? throw new ArgumentNullException(nameof(warningBarViewModel));
     }
 
     public void UpdateStatus(string message, NotificationType type = NotificationType.Information)
     {
         _statusBarViewModel.UpdateStatus(message, type);
     }
-
-    private static NotificationType MapNotificationType(NotificationType type) =>
-        type switch
-        {
-            NotificationType.Success => NotificationType.Success,
-            NotificationType.Warning => NotificationType.Warning,
-            NotificationType.Error => NotificationType.Error,
-            _ => NotificationType.Information
-        };
 }

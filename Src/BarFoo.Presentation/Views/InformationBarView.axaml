@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:BarFoo.Presentation.ViewModels"
+             xmlns:views="clr-namespace:BarFoo.Presentation.Views;assembly=BarFoo"
+             x:Class="BarFoo.Presentation.Views.InformationBarView"
+             x:DataType="vm:InformationBarViewModel"
+             xmlns:converters="using:BarFoo.Presentation.Converters"
+             xmlns:not="using:Avalonia.Controls.Notifications">
+<!--IsVisible="{Binding IsVisible}"-->
+  <UserControl.Resources>
+    <converters:UpdatingConverter x:Key="UpdatingConverter"/>
+    <converters:NotificationTypeToClassConverter x:Key="NotificationTypeToClassConverter"/>
+  </UserControl.Resources>
+
+  <!-- Information Bar Background="#F3E5AB"-->
+  <DockPanel HorizontalAlignment="Stretch"
+             Background="#81E8FF"
+             LastChildFill="False">
+
+    <!-- Notifications -->
+    <!-- Notification Border -->
+    <StackPanel DockPanel.Dock="Right"
+                Orientation="Horizontal">
+      <Border x:Name="InformationBorder"
+              BorderThickness="15 0 0 0"
+              Margin="25 5 2 5">
+        <Border.Styles>
+          <Style Selector="Border">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="IsVisible" Value="{Binding IsStatusActive}"/>
+          </Style>
+          <Style Selector="Border.Error">
+            <Setter Property="BorderBrush" Value="{DynamicResource Error1}"/>
+          </Style>
+          <Style Selector="Border.Warning">
+            <Setter Property="BorderBrush" Value="{DynamicResource Warning1}"/>
+          </Style>
+          <Style Selector="Border.Success">
+            <Setter Property="BorderBrush" Value="{DynamicResource Success1}"/>
+          </Style>
+          <Style Selector="Border.Information">
+            <Setter Property="BorderBrush" Value="Black"/>
+          </Style>
+        </Border.Styles>
+        <!-- Notification Text -->
+        <TextBlock VerticalAlignment="Center"
+                   Margin="2"
+                   Foreground="Black"
+                   FontWeight="DemiBold"
+                   Text="{Binding StatusMessage}"/>
+      </Border>
+    </StackPanel>
+  </DockPanel>
+</UserControl>

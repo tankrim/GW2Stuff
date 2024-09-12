@@ -1,9 +1,6 @@
-﻿using Avalonia.Controls.Notifications;
-
-using BarFoo.Core.Interfaces;
+﻿using BarFoo.Core.Interfaces;
 using BarFoo.Core.Messages;
 using BarFoo.Presentation.Interfaces;
-using BarFoo.Presentation.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -24,7 +21,8 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     public FilterViewModel FilterVM { get; }
     public PactSupplyNetworkAgentViewModel PactSupplyNetworkAgentVM { get; }
     public ArcDpsViewModel ArcDpsVM { get; }
-    public StatusBarViewModel StatusBarVM { get; }
+    public InformationBarViewModel StatusBarVM { get; }
+    public InformationBarViewModel InformationBarVM { get; }
 
     [ObservableProperty]
     private bool _isPaneOpen;
@@ -35,11 +33,12 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         FilterViewModel filterVM,
         PactSupplyNetworkAgentViewModel pactSupplyNetworkAgentVM,
         ArcDpsViewModel arcDpsVM,
-        StatusBarViewModel statusBarVM,
+        InformationBarViewModel statusBarVM,
         IStore store,
         ILogger<MainViewModel> logger,
         IMessagingService messagingService,
-        IStatusUpdateService statusUpdateService)
+        IStatusUpdateService statusUpdateService,
+        InformationBarViewModel warningBarVM)
     {
         ApiKeyVM = apiKeyVM ?? throw new ArgumentNullException(nameof(apiKeyVM));
         ObjectivesVM = objectivesVM ?? throw new ArgumentNullException(nameof(objectivesVM));
@@ -47,6 +46,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         PactSupplyNetworkAgentVM = pactSupplyNetworkAgentVM ?? throw new ArgumentNullException(nameof(pactSupplyNetworkAgentVM));
         ArcDpsVM = arcDpsVM ?? throw new ArgumentNullException($"{nameof(arcDpsVM)}");
         StatusBarVM = statusBarVM ?? throw new ArgumentNullException(nameof(statusBarVM));
+        InformationBarVM = warningBarVM ?? throw new ArgumentNullException(nameof(warningBarVM));
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));

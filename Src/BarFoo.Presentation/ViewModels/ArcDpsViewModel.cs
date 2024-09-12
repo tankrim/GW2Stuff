@@ -1,5 +1,4 @@
-﻿using Avalonia.Controls;
-using Avalonia.Controls.Notifications;
+﻿using Avalonia.Controls.Notifications;
 
 using BarFoo.Core.Interfaces;
 using BarFoo.Presentation.Interfaces;
@@ -21,7 +20,7 @@ public partial class ArcDpsViewModel : ViewModelBase
     private readonly INotificationService _notificationService;
 
     [ObservableProperty] private string? _selectedDirectoryPath;
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DownloadAndSaveFileCommand))]
     private bool _isDownloadEnabled;
@@ -80,9 +79,8 @@ public partial class ArcDpsViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(SelectedDirectoryPath))
         {
-            _logger.LogWarning("Download attempted with no directory selected");
-            // TODO: Show warning
-            return;
+            _logger.LogError("Download attempted with no directory selected");
+            throw new InvalidOperationException("DownloadAndSaveFile was called with no directory selected.");
         }
 
         try
@@ -102,7 +100,7 @@ public partial class ArcDpsViewModel : ViewModelBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in DownloadAndSaveFile");
-            // TODO: Show warning
+            _notificationService.UpdateStatus("Something went wrong while downloading and saving ArcDPS", NotificationType.Warning);
         }
     }
 }

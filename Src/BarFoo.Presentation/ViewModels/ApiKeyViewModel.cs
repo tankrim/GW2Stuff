@@ -6,7 +6,6 @@ using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 
 using Microsoft.Extensions.Logging;
 

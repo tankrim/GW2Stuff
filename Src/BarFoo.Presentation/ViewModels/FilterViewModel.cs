@@ -22,6 +22,12 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
     private FilterState _filterState;
 
     [ObservableProperty]
+    private int _loadedObjectivesCount;
+
+    [ObservableProperty]
+    private int _filteredObjectivesCount;
+
+    [ObservableProperty]
     private bool _isLoading;
 
     public IRelayCommand SendFilterChangedCommand { get; }
@@ -51,6 +57,7 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
         _messagingService.Register<ApiKeyMessages.ApiKeyDeletedMessage>(this, HandleApiKeyDeleted);
         _messagingService.Register<ApiKeyMessages.ApiKeysLoadedMessage>(this, HandleApiKeysLoaded);
         _messagingService.Register<IsLoadingMessage>(this, HandleIsLoading);
+        _messagingService.Register<ObjectiveMessages.ObjectivesChangedMessage>(this, HandleObjectivesChanged);
     }
 
     private void OnFilterStatePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -86,6 +93,18 @@ public partial class FilterViewModel : ViewModelBase, IFilter, IFilterViewModel,
         {
             _logger.LogDebug("ApiKeyFilter IsSelected changed");
             SendFilterChangedCommand.Execute(null);
+        }
+    }
+
+    private void HandleObjectivesChanged(object recipient, ObjectiveMessages.ObjectivesChangedMessage message)
+    {
+        if (message.Value.PropertyName == nameof(ObjectivesViewModel.Objectives))
+        {
+            LoadedObjectivesCount = message.Value.Value.Count;
+        }
+        if (message.Value.PropertyName == nameof(ObjectivesViewModel.FilteredObjectives))
+        {
+            FilteredObjectivesCount = message.Value.Value.Count;
         }
     }
 

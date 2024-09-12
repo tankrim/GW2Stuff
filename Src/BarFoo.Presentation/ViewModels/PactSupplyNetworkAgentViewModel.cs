@@ -37,17 +37,27 @@ public partial class PactSupplyNetworkAgentViewModel : ViewModelBase
     {
         try
         {
-            _notificationService.UpdateStatus("Determining PSNA Links", NotificationType.Information);
+            _notificationService.UpdateStatus("Retrieving PSNA Links", NotificationType.Information);
             _psnaLinks = await _pactSupplyNetworkAgentService.GetPSNA();
             _logger.LogInformation("Retrieved PSNA information.");
 
-            await _clipboardService.SetTextAsync(_psnaLinks);
-            _logger.LogInformation("Put PSNA information on the clipboard.");
-            _notificationService.UpdateStatus("PSNA Links Copied to Clipboard", NotificationType.Information);
+            try
+            {
+                await _clipboardService.SetTextAsync(_psnaLinks);
+                _logger.LogInformation("Put PSNA information on the clipboard.");
+                _notificationService.UpdateStatus("PSNA Links Copied to Clipboard", NotificationType.Success);
+            }
+            catch (Exception ex)
+            {
+                _notificationService.UpdateStatus("Something went wrong while copying PSNA links to clipboard.", NotificationType.Error);
+                _logger.LogError(ex, "An error occurred while copying PSNA links to clipboard.");
+                throw;
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while copying PSNA links to clipboard.");
+            _notificationService.UpdateStatus("Something went wrong while retrieving PSNA information.", NotificationType.Error);
+            _logger.LogError(ex, "An error occurred while retrieving PSNA information.");
             throw;
         }
     }

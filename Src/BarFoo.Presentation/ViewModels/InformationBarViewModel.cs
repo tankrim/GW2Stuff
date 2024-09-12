@@ -2,13 +2,12 @@
 using Avalonia.Threading;
 
 using BarFoo.Core.Interfaces;
-using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BarFoo.Presentation.ViewModels;
 
-public partial class StatusBarViewModel : ViewModelBase, IDisposable
+public partial class InformationBarViewModel : ViewModelBase, IDisposable
 {
     private readonly IMessagingService _messagingService;
     private readonly DispatcherTimer _clearTimer;
@@ -16,12 +15,6 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty]
     private bool _isUpdating;
-
-    [ObservableProperty]
-    private int _loadedObjectivesCount;
-
-    [ObservableProperty]
-    private int _filteredObjectivesCount;
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
@@ -34,7 +27,7 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
     private NotificationType _statusType = NotificationType.Information;
 
 
-    public StatusBarViewModel(IMessagingService messagingService)
+    public InformationBarViewModel(IMessagingService messagingService)
     {
         _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
 
@@ -44,20 +37,6 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
             Interval = _clearDelay
         };
         _clearTimer.Tick += ClearTimer_Tick;
-
-        _messagingService.Register<ObjectiveMessages.ObjectivesChangedMessage>(this, HandleObjectivesChanged);
-    }
-
-    private void HandleObjectivesChanged(object recipient, ObjectiveMessages.ObjectivesChangedMessage message)
-    {
-        if (message.Value.PropertyName == nameof(ObjectivesViewModel.Objectives))
-        {
-            LoadedObjectivesCount = message.Value.Value.Count;
-        }
-        if (message.Value.PropertyName == nameof(ObjectivesViewModel.FilteredObjectives))
-        {
-            FilteredObjectivesCount = message.Value.Value.Count;
-        }
     }
 
     private void ClearTimer_Tick(object? sender, EventArgs e)
@@ -92,8 +71,7 @@ public partial class StatusBarViewModel : ViewModelBase, IDisposable
     {
         _clearTimer.Stop();
         _clearTimer.Tick -= ClearTimer_Tick;
-        _messagingService.Unregister<ObjectiveMessages.ObjectivesChangedMessage>(this);
-        _messagingService.Unregister<IsUpdatingMessage>(this);
+        //_messagingService.Unregister<IsUpdatingMessage>(this);
         GC.SuppressFinalize(this);
     }
 }

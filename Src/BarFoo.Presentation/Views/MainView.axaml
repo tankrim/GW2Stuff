@@ -16,8 +16,7 @@
   <Grid RowDefinitions="*,auto">
 
     <!-- SplitView -->
-    <SplitView Grid.Row="0"
-               IsPaneOpen="{Binding IsPaneOpen}"
+    <SplitView IsPaneOpen="{Binding IsPaneOpen}"
                DisplayMode="CompactInline"
                OpenPaneLength="250"
                PanePlacement="Left">
@@ -44,92 +43,85 @@
       </SplitView.Pane>
 
       <!-- Main Content -->
-      <Grid RowDefinitions="Auto, Auto,*" ColumnDefinitions="7*,3*">
+      <Grid RowDefinitions="Auto, Auto, Auto, Auto, *">
 
-        <!-- Header -->
-        <Grid Grid.Row="0"
-              Grid.Column="0"
-              Grid.ColumnSpan="2"
-              ColumnDefinitions="*,Auto"
-              Classes="header">
-          <Label Grid.Column="0"
-                 HorizontalContentAlignment="Center"
+        <Grid Grid.Row="0">
+          <Label HorizontalContentAlignment="Center"
                  Classes="h1 header">
             Guild Wars 2 Stuff
           </Label>
+        </Grid>
 
-          <StackPanel Grid.Row="1"
-                 Grid.Column="2"
-                 Margin="20 20 20 20">
+        <Panel Grid.Row="1"
+               MinHeight="35"
+               Margin="0 0 0 10">
+          <views:InformationBarView DataContext="{Binding InformationBarVM}"/>
+        </Panel>
 
-            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-              <!-- ArcDPS download -->
-              <Button Grid.Row="1"
-                      Grid.Column="2"
-                      Classes="inverted"
-                      Command="{Binding ArcDpsVM.DownloadAndSaveFileCommand}"
-                      IsEnabled="{Binding ArcDpsVM.IsDownloadEnabled}"
-                      ToolTip.Tip="Download ArcDPS to the Guild Wars 2 Folder">
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="Download ArcDPS" VerticalAlignment="Center"/>
-                  <Image Source="{SvgImage /Assets/download.svg}"
-                         MinWidth="24"
-                         MinHeight="24"
-                         Margin="10 0 0 0"/>
-                </StackPanel>
-              </Button>
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0 10 0 0">
 
-              <!-- Set GW2 directory -->
-              <Button Grid.Row="1"
-                      Grid.Column="2"
-                      Classes="inverted"
-                      Command="{Binding ArcDpsVM.SelectDirectoryCommand}"
-                      ToolTip.Tip="Set the Guild Wars 2 Folder"
-                      Margin="10 0 0 0">
-                <Image Source="{SvgImage /Assets/settings.svg}"
-                       MinWidth="12"
-                       MinHeight="12"
-                       HorizontalAlignment="Center"/>
-              </Button>
-            </StackPanel>
-
-            <!-- PSNA -->
-            <Button Grid.Row="1"
-                    Grid.Column="2"
-                    Command="{Binding PactSupplyNetworkAgentVM.CopyPSNALinksToClipboard}"
-                    Classes="inverted"
-                    ToolTip.Tip="Copy Today's Pact Supply Network Locations to the clipboard">
+          <StackPanel Orientation="Horizontal"
+                      Margin="20 0 50 0">
+            <Button Classes="button"
+                    Command="{Binding ArcDpsVM.DownloadAndSaveFileCommand}"
+                    IsEnabled="{Binding ArcDpsVM.IsDownloadEnabled}"
+                    ToolTip.Tip="Download ArcDPS to the Guild Wars 2 Folder">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="PSNA" VerticalAlignment="Center"/>
-                <Image Source="{SvgImage /Assets/copy.svg}"
+                <TextBlock Text="Download ArcDPS" VerticalAlignment="Center"/>
+                <Image Source="{SvgImage /Assets/download.svg}"
                        MinWidth="24"
-                       MinHeight="24"
-                       Margin="10 0 0 0"/>
+                       MinHeight="24"/>
               </StackPanel>
+            </Button>
+
+            <Button Classes="button"
+                    Command="{Binding ArcDpsVM.SelectDirectoryCommand}"
+                    ToolTip.Tip="Set the Guild Wars 2 Folder">
+              <Image Source="{SvgImage /Assets/settings.svg}"
+                     MinWidth="12"
+                     MinHeight="12"
+                     HorizontalAlignment="Center"/>
             </Button>
           </StackPanel>
 
-        </Grid>
+          <Button Classes="button"
+                  Command="{Binding PactSupplyNetworkAgentVM.CopyPSNALinksToClipboard}"
+                  ToolTip.Tip="Copy Today's Pact Supply Network Locations to the clipboard"
+                  Margin="0 0 50 0">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Retrieve PSNA Links"
+                         VerticalAlignment="Center"/>
+              <Image Source="{SvgImage /Assets/copy.svg}"
+                     MinWidth="24"
+                     MinHeight="24"/>
+            </StackPanel>
+          </Button>
+
+          <Button Classes="button"
+                  Command="{Binding DoManualSyncCommand}"
+                  ToolTip.Tip="Synchronize with the GW2 Wizard's Vault API"
+                  Margin="0 0 50 0">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Synchronize Wizard's Vault Objectives"
+                         VerticalAlignment="Center"/>
+              <Image Source="{SvgImage /Assets/sync.svg}"
+                     MinWidth="24"
+                     MinHeight="24"/>
+            </StackPanel>
+          </Button>
+
+        </StackPanel>
 
         <!-- Filters -->
-        <Grid Grid.Row="1"
-               Grid.Column="0"
-              ColumnDefinitions="*,Auto"
-               Margin="10 20 0 15">
-          <views:FilterView Grid.Column="0" DataContext="{Binding FilterVM}"/>
-
-          <Button Grid.Column="1"
-           Classes="button"
-           Command="{Binding DoManualSyncCommand}"
-           HorizontalAlignment="Right">
-            Sync
-          </Button>
-        </Grid>
+        <Panel Grid.Row="3" Margin="0 40 0 0">
+          <views:FilterView DataContext="{Binding FilterVM}"/>
+        </Panel>
 
         <!-- Objectives -->
-        <Panel Grid.Row="2"
-               Grid.Column="0"
-               Grid.ColumnSpan="2"
+        <Panel Grid.Row="4"
                Margin="0 5 10 10">
           <views:ObjectivesView DataContext="{Binding ObjectivesVM}"/>
         </Panel>
@@ -138,11 +130,6 @@
       </Grid>
 
     </SplitView>
-
-    <!-- StatusBar-->
-    <Grid Grid.Row="1">
-      <views:StatusBarView DataContext="{Binding StatusBarVM}"/>
-    </Grid>
 
   </Grid>
 

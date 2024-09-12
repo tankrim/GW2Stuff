@@ -1,6 +1,4 @@
-﻿using Avalonia.Controls.Notifications;
-
-namespace BarFoo.Presentation.Interfaces;
+﻿namespace BarFoo.Presentation.Interfaces;
 
 public interface IStatusUpdateService
 {
