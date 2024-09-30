@@ -241,6 +241,7 @@ public partial class App : Application
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IStatusUpdateService, StatusUpdateService>();
 
+        services.AddSingleton<ProblemBarViewModel>();
         services.AddSingleton<InformationBarViewModel>();
         services.AddTransient<ArcDpsViewModel>();
         services.AddTransient<PactSupplyNetworkAgentViewModel>();

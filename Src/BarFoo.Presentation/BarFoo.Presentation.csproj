@@ -56,6 +56,9 @@
     <Compile Update="Views\ApiKeyView.axaml.cs">
       <DependentUpon>ApiKeyView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\ProblemBarView.axaml.cs">
+      <DependentUpon>ProblemBarView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\PactSupplyNetworkAgentView.axaml.cs">
       <DependentUpon>PactSupplyNetworkAgentView.axaml</DependentUpon>
     </Compile>

@@ -44,12 +44,6 @@ public partial class InformationBarView : UserControl
             statusBorder.Classes.Clear();
             switch (InformationBarVM.StatusType)
             {
-                case NotificationType.Error:
-                    statusBorder.Classes.Add("Error");
-                    break;
-                case NotificationType.Warning:
-                    statusBorder.Classes.Add("Warning");
-                    break;
                 case NotificationType.Success:
                     statusBorder.Classes.Add("Success");
                     break;

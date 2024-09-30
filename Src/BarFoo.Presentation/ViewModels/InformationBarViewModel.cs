@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 
-using BarFoo.Core.Interfaces;
+using BarFoo.Core.Messages;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -9,15 +9,17 @@ namespace BarFoo.Presentation.ViewModels;
 
 public partial class InformationBarViewModel : ViewModelBase, IDisposable
 {
-    private readonly IMessagingService _messagingService;
     private readonly DispatcherTimer _clearTimer;
-    private readonly TimeSpan _clearDelay = TimeSpan.FromSeconds(5);
+    private readonly TimeSpan _clearDelay = TimeSpan.FromSeconds(7);
 
     [ObservableProperty]
     private bool _isUpdating;
 
     [ObservableProperty]
-    private string _statusMessage = string.Empty;
+    private string _updatingMessage = string.Empty;
+
+    [ObservableProperty]
+    private string _positiveMessage = string.Empty;
 
     [ObservableProperty]
     private bool _isStatusActive;
@@ -26,12 +28,8 @@ public partial class InformationBarViewModel : ViewModelBase, IDisposable
     [NotifyPropertyChangedFor(nameof(IsStatusActive))]
     private NotificationType _statusType = NotificationType.Information;
 
-
-    public InformationBarViewModel(IMessagingService messagingService)
+    public InformationBarViewModel()
     {
-        _messagingService = messagingService ?? throw new ArgumentNullException(nameof(messagingService));
-
-
         _clearTimer = new DispatcherTimer
         {
             Interval = _clearDelay
@@ -46,8 +44,18 @@ public partial class InformationBarViewModel : ViewModelBase, IDisposable
 
     public void UpdateStatus(string message, NotificationType type)
     {
-        StatusMessage = message;
         StatusType = type;
+
+        switch (message)
+        {
+            case "Updating...":
+                UpdatingMessage = message;
+                break;
+            default:
+                PositiveMessage = message;
+                break;
+        }
+
         IsStatusActive = true;
         RestartClearTimer();
     }
@@ -60,7 +68,8 @@ public partial class InformationBarViewModel : ViewModelBase, IDisposable
 
     private void ClearStatus()
     {
-        StatusMessage = string.Empty;
+        UpdatingMessage = string.Empty;
+        PositiveMessage = string.Empty;
         IsStatusActive = false;
         StatusType = 0;
         IsUpdating = false;
@@ -71,7 +80,6 @@ public partial class InformationBarViewModel : ViewModelBase, IDisposable
     {
         _clearTimer.Stop();
         _clearTimer.Tick -= ClearTimer_Tick;
-        //_messagingService.Unregister<IsUpdatingMessage>(this);
         GC.SuppressFinalize(this);
     }
 }

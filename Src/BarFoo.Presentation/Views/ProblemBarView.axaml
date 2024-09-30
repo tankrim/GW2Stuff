@@ -4,10 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:BarFoo.Presentation.ViewModels"
              xmlns:views="clr-namespace:BarFoo.Presentation.Views;assembly=BarFoo"
-             x:Class="BarFoo.Presentation.Views.InformationBarView"
-             x:DataType="vm:InformationBarViewModel"
+             x:Class="BarFoo.Presentation.Views.ProblemBarView"
+             x:DataType="vm:ProblemBarViewModel"
              xmlns:converters="using:BarFoo.Presentation.Converters"
-             xmlns:not="using:Avalonia.Controls.Notifications">
+             xmlns:not="using:Avalonia.Controls.Notifications"
+             IsVisible="{Binding IsVisible}">
   <UserControl.Resources>
     <converters:UpdatingConverter x:Key="UpdatingConverter"/>
     <converters:NotificationTypeToClassConverter x:Key="NotificationTypeToClassConverter"/>
@@ -15,25 +16,14 @@
 
   <!-- Information Bar Background="#F3E5AB"-->
   <DockPanel HorizontalAlignment="Stretch"
-             Background="#81E8FF"
+             Background="#F3E5AB"
              LastChildFill="False">
 
     <!-- Notifications -->
+    <!-- Notification Border -->
     <StackPanel DockPanel.Dock="Right"
-                Orientation="Horizontal"
-                VerticalAlignment="Center">
-
-      <!-- Updating Text -->
-      <Border BorderThickness="0 0 0 5">
-        <TextBlock VerticalAlignment="Center"
-                   Text="{Binding UpdatingMessage}"
-                   Margin="2"
-                   Foreground="Black"
-                   FontWeight="DemiBold"/>
-      </Border>
-
-      <!-- Notification Border -->
-      <Border x:Name="InformationBorder"
+                Orientation="Horizontal">
+      <Border x:Name="ProblemBorder"
               BorderThickness="0 0 0 5"
               Margin="25 5 2 5">
         <Border.Styles>
@@ -41,19 +31,25 @@
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="IsVisible" Value="{Binding IsStatusActive}"/>
           </Style>
-          <Style Selector="Border.Information">
-            <Setter Property="BorderThickness" Value="0"/>
+          <Style Selector="Border.Warning">
+            <Setter Property="BorderBrush" Value="{DynamicResource Warning1}"/>
           </Style>
-          <Style Selector="Border.Success">
-            <Setter Property="BorderBrush" Value="{DynamicResource Success1}"/>
+          <Style Selector="Border.Error">
+            <Setter Property="BorderBrush" Value="{DynamicResource Error1}"/>
           </Style>
         </Border.Styles>
         <!-- Notification Text -->
-        <TextBlock Margin="2"
+        <TextBlock VerticalAlignment="Center"
+                   Margin="2"
                    Foreground="Black"
                    FontWeight="DemiBold"
-                   Text="{Binding PositiveMessage}"/>
+                   Text="{Binding NegativeMessage}"/>
       </Border>
+      
+      <Button Command="{Binding CloseCommand}"
+              Content="x"
+              Background="Red"
+              Margin="10 0 0 0"/>
     </StackPanel>
   </DockPanel>
 </UserControl>
