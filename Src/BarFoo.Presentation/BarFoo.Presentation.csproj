@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" />
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="Avalonia.Svg" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
@@ -44,6 +45,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Velopack" />
   </ItemGroup>
 
   <ItemGroup>
