@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 using BarFoo.Core.Interfaces;
 
@@ -60,7 +59,8 @@ public class PactSupplyNetworkAgentService : IPactSupplyNetworkAgentService
             return "Not enough locations provided.";
         }
 
-        string secondLocation = locations[1];
+        string secondLocationEncoded = locations[1];
+        string secondLocation = Uri.UnescapeDataString(secondLocationEncoded);
 
         switch (secondLocation)
         {
@@ -76,7 +76,6 @@ public class PactSupplyNetworkAgentService : IPactSupplyNetworkAgentService
                 return "No matching day found.";
         }
     }
-
 
     private static readonly Dictionary<string, string> _locationLinks = new Dictionary<string, string>
     {
@@ -110,14 +109,14 @@ public class PactSupplyNetworkAgentService : IPactSupplyNetworkAgentService
         {"Pearl Islet Waypoint", "[&BNUGAAA=]"},
         {"Dolyak Pass Waypoint", "[&BHsBAAA=]"},
         {"Hawkgates Waypoint", "[&BNMAAAA=]"},
-        {"Azarr's Arbor", "[&BIYHAAA=]"},
+        {"Azarr%27s Arbor", "[&BIYHAAA=]"},
         {"Mabon Waypoint", "[&BDoBAAA=]"},
         {"Fort Trinity Waypoint", "[&BO4CAAA=]"},
         {"Mudflat Camp", "[&BKcBAAA=]"},
         {"Blue Ice Shining Waypoint", "[&BIUCAAA=]"},
         {"Snow Ridge Camp Waypoint", "[&BCECAAA=]"},
-        {"Gallant's Folly", "[&BLkCAAA=]"},
-        {"Augur's Torch", "[&BBEDAAA=]"},
+        {"Gallant%27s Folly", "[&BLkCAAA=]"},
+        {"Augur%27s Torch", "[&BBEDAAA=]"},
         {"Vigil Keep Waypoint", "[&BJIBAAA=]"},
         {"Balddistead", "[&BEICAAA=]"},
         {"Bovarin Estate", "[&BGABAAA=]"}
