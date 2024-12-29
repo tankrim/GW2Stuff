@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -42,6 +43,67 @@ public class GuildWars2ApiClient : IGuildWars2ApiClient
             );
     }
 
+    //public async Task<IEnumerable<ObjectiveDto>> GetObjectivesAsync(string endpoint, string accountName)
+    //{
+    //    ArgumentException.ThrowIfNullOrWhiteSpace(nameof(endpoint));
+    //    ArgumentException.ThrowIfNullOrWhiteSpace(nameof(accountName));
+
+    //    var apiKey = await GetApiKeyForAccount(accountName);
+
+    //    // Clear any existing headers to avoid duplicates
+    //    _httpClient.DefaultRequestHeaders.Clear();
+
+    //    try
+    //    {
+    //        // Use query parameter instead of header
+    //        var response = await _retryPolicy.ExecuteAsync(() =>
+    //            _httpClient.GetAsync($"v2/account/wizardsvault/{endpoint}?access_token={apiKey}"));
+
+    //        await HandleResponseStatusCode(response, accountName, endpoint);
+
+    //        var content = await response.Content.ReadAsStringAsync();
+
+    //        if (string.IsNullOrWhiteSpace(content) || content == "{}")
+    //        {
+    //            _logger.LogError("API returned empty response for apiEndpoint {Endpoint}", endpoint);
+    //            throw new ApiResponseFormatException($"Unexpected empty response from Guild Wars 2 API. Endpoint: {endpoint}");
+    //        }
+
+    //        try
+    //        {
+    //            var apiResponse = DeserializeApiResponse(content)
+    //                    ?? throw new ApiResponseFormatException($"Invalid response format from Guild Wars 2 API. Endpoint: {endpoint}");
+
+    //            return MapApiResponseToObjectives(apiResponse, endpoint, accountName);
+    //        }
+    //        catch (JsonException ex)
+    //        {
+    //            _logger.LogError(ex, "Failed to deserialize API response for apiEndpoint {Endpoint}", endpoint);
+    //            throw new ApiResponseFormatException($"Invalid response format from Guild Wars 2 API. Endpoint: {endpoint}", ex);
+    //        }
+    //    }
+    //    catch (HttpRequestException ex)
+    //    {
+    //        _logger.LogError(ex, "Network error occurred while fetching objectives for apiEndpoint {Endpoint}", endpoint);
+    //        throw new ApiConnectionException($"Failed to connect to the Guild Wars 2 API. Endpoint: {endpoint}", ex);
+    //    }
+    //    catch (TaskCanceledException ex)
+    //    {
+    //        _logger.LogError(ex, "Request timed out for apiEndpoint {Endpoint}", endpoint);
+    //        throw new ApiTimeoutException($"Request to Guild Wars 2 API timed out. Endpoint: {endpoint}", ex);
+    //    }
+    //    catch (JsonException ex)
+    //    {
+    //        _logger.LogError(ex, "Failed to deserialize API response for apiEndpoint {Endpoint}", endpoint);
+    //        throw new ApiResponseFormatException($"Invalid response format from Guild Wars 2 API. Endpoint: {endpoint}", ex);
+    //    }
+    //    catch (Exception ex) when (ex is not ApiClientException)
+    //    {
+    //        _logger.LogError(ex, "Unexpected error occurred while fetching objectives for apiEndpoint {Endpoint}", endpoint);
+    //        throw new ApiClientException($"An unexpected error occurred while communicating with the Guild Wars 2 API. Endpoint: {endpoint}", ex);
+    //    }
+    //}
+
     public async Task<IEnumerable<ObjectiveDto>> GetObjectivesAsync(string endpoint, string accountName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(nameof(endpoint));
@@ -49,10 +111,10 @@ public class GuildWars2ApiClient : IGuildWars2ApiClient
 
         var apiKey = await GetApiKeyForAccount(accountName);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-        _httpClient.DefaultRequestHeaders.Add("X-Schema-Version", "latest");
 
         try
         {
+            _httpClient.DefaultRequestHeaders.Add("X-Schema-Version", "latest");
             var response = await _retryPolicy.ExecuteAsync(() => _httpClient.GetAsync($"v2/account/wizardsvault/{endpoint}"));
 
             await HandleResponseStatusCode(response, accountName, endpoint);
