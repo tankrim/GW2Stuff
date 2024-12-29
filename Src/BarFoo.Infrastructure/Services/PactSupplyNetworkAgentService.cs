@@ -89,7 +89,7 @@ public class PactSupplyNetworkAgentService : IPactSupplyNetworkAgentService
         {"Desider Atum Waypoint", "[&BEgAAAA=]"},
         {"Waste Hollows Waypoint", "[&BKgCAAA=]"},
         {"Garenhoff", "[&BBkAAAA=]"},
-        {"Travelen's Waypoint", "[&BGQCAAA=]"},
+        {"Travelen%27s Waypoint", "[&BGQCAAA=]"},
         {"Temperus Point Waypoint", "[&BIMBAAA=]"},
         {"Town of Prosperity", "[&BH4HAAA=]"},
         {"Swampwatch Post", "[&BMIBAAA=]"},
