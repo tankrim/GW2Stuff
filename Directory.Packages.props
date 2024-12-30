@@ -59,7 +59,7 @@
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
-    <PackageVersion Include="Velopack" Version="0.0.626" />
+    <PackageVersion Include="Velopack" Version="0.0.1023" />
     <PackageVersion Include="xunit" Version="2.9.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
