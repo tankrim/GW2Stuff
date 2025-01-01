@@ -76,7 +76,7 @@ public class ApiKeyRepository : IApiKeyRepository
                 context.ApiKeys.Remove(apikey);
                 var result = await context.SaveChangesAsync();
 
-                if (result! < 0)
+                if (result != 0)
                 {
                     return true;
                 }
