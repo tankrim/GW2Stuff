@@ -109,11 +109,14 @@ public class GuildWars2ApiClient : IGuildWars2ApiClient
         ArgumentException.ThrowIfNullOrWhiteSpace(nameof(accountName));
 
         var apiKey = await GetApiKeyForAccount(accountName);
+
+        _httpClient.DefaultRequestHeaders.Clear();
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en"));
+        _httpClient.DefaultRequestHeaders.Add("X-Schema-Version", "latest");
 
         try
         {
-            _httpClient.DefaultRequestHeaders.Add("X-Schema-Version", "latest");
             var response = await _retryPolicy.ExecuteAsync(() => _httpClient.GetAsync($"v2/account/wizardsvault/{endpoint}"));
 
             await HandleResponseStatusCode(response, accountName, endpoint);
