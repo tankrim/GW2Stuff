@@ -40,6 +40,7 @@
     <!-- # Visible / # Total-->
     <StackPanel Grid.Column="2"
                 Orientation="Horizontal"
+                VerticalAlignment="Center"
                 Spacing="10"
                 Margin="50,0,10,0">
       <TextBlock>
