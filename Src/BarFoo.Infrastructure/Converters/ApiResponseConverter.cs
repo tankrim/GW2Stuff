@@ -5,6 +5,9 @@ using BarFoo.Infrastructure.Models;
 
 namespace BarFoo.Infrastructure.Converters;
 
+/// <summary>
+/// Handles conversion of JSON responses containing objective data
+/// </summary>
 public class ApiResponseConverter : JsonConverter<ApiResponse>
 {
     private static readonly HashSet<string> RequiredMetaProperties = new()
@@ -31,6 +34,7 @@ public class ApiResponseConverter : JsonConverter<ApiResponse>
         {
             if (reader.TokenType == JsonTokenType.EndObject)
             {
+                // Ensure all required properties are present before returning
                 ValidateProperties(seenProperties, seenMetaProperties);
                 response.HasMetaData = seenMetaProperties.Count > 0;
                 return response;

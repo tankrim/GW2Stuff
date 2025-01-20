@@ -5,6 +5,12 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace BarFoo.Data;
 
+/// <summary>
+/// Set up an SQLite database file named "barfoo.db" in the local application data folder (e.g., on Windows this would be in %LocalAppData%\BarFoo\).
+/// Create the directory if it doesn't exist.
+/// Build a connection string pointing to this SQLite database.
+/// Configure the database context with SQLite and return it.
+/// </summary>
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<BarFooDbContext>
 {
     public const string AppName = "BarFoo";

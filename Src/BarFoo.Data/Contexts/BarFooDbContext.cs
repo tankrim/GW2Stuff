@@ -1,9 +1,16 @@
 ﻿using BarFoo.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
-
 namespace BarFoo.Data.Contexts;
 
+/// <summary>
+/// Database context for managing Guild Wars 2 API keys and objectives.
+/// Handles relationships between accounts and their associated game objectives.
+/// There are three related database tables:
+/// ApiKeys: Stores API keys associated with account names, tracking sync status and timing.
+/// Objectives: Stores game objectives with properties like title, progress, and claim status.
+/// ApiKeyObjectives: A junction table that creates a many-to-many relationship between API keys and objectives.
+/// </summary>
 public class BarFooDbContext : DbContext
 {
     public DbSet<ApiKey> ApiKeys { get; set; }

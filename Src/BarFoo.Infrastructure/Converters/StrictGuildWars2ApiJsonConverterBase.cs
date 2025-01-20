@@ -3,6 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace BarFoo.Infrastructure.Converters;
 
+/// <summary>
+/// Base converter class that enforces strict JSON validation for Guild Wars 2 API responses
+/// </summary>
 public abstract class StrictGuildWars2ApiJsonConverterBase<T> : JsonConverter<T> where T : class, new()
 {
     protected abstract Dictionary<string, (Type Type, bool IsArray, bool IsRequired)> AllowedProperties { get; }

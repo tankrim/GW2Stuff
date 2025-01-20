@@ -4,6 +4,9 @@ using BarFoo.Infrastructure.Models;
 
 namespace BarFoo.Infrastructure.Converters;
 
+/// <summary>
+/// Converts JSON into ApiObjective objects with strict property validation
+/// </summary>
 public class ApiObjectiveConverter : StrictGuildWars2ApiJsonConverterBase<ApiObjective>
 {
     protected override Dictionary<string, (Type Type, bool IsArray, bool IsRequired)> AllowedProperties => new()

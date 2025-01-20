@@ -8,6 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace BarFoo.Data.Repositories;
 
+/// <summary>
+/// Repository for managing API keys and their associated objectives in the database.
+/// Implements CRUD operations and relationship management between API keys and objectives.
+/// </summary>
 public class ApiKeyRepository : IApiKeyRepository
 {
     private readonly IDbContextFactory<BarFooDbContext> _contextFactory;
@@ -43,9 +47,11 @@ public class ApiKeyRepository : IApiKeyRepository
         using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
+            // Attach the API key to track it without querying the database
             context.Attach(apikey);
             foreach (var objective in objectives)
             {
+                // Reuse existing objective if it exists to prevent duplicates
                 var existingObjective = await context.Objectives.FindAsync(objective.Id);
                 if (existingObjective == null)
                 {
@@ -165,7 +171,7 @@ public class ApiKeyRepository : IApiKeyRepository
             existingApiKey.HasBeenSyncedOnce = apikey.HasBeenSyncedOnce;
             existingApiKey.LastSyncTime = apikey.LastSyncTime;
 
-            // Update objectives
+            // Get IDs of existing and new objectives to determine what needs to be added/removed
             var existingObjectiveIds = existingApiKey.ApiKeyObjectives.Select(ao => ao.ObjectiveId).ToList();
             var newObjectiveIds = apikey.ApiKeyObjectives.Select(ao => ao.ObjectiveId).ToList();
 
@@ -176,7 +182,7 @@ public class ApiKeyRepository : IApiKeyRepository
                 existingApiKey.ApiKeyObjectives.Remove(objectiveToRemove);
             }
 
-            // Add new objectives
+            // Add new objectives, creating them in the objectives table if they don't exist
             foreach (var newApiKeyObjective in apikey.ApiKeyObjectives.Where(ao => !existingObjectiveIds.Contains(ao.ObjectiveId)))
             {
                 var objective = await context.Objectives.FindAsync(newApiKeyObjective.ObjectiveId);

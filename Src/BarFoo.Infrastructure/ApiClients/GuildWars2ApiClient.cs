@@ -14,6 +14,10 @@ using Polly.Retry;
 
 namespace BarFoo.Infrastructure.ApiClients;
 
+/// <summary>
+/// Handles API communication with the Guild Wars 2 API service.
+/// Implements retry policies and authentication for API requests.
+/// </summary>
 public class GuildWars2ApiClient : IGuildWars2ApiClient
 {
     private readonly HttpClient _httpClient;
